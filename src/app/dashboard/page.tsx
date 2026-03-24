@@ -103,7 +103,7 @@ export default async function DashboardPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {qrs && qrs.length > 0 ? qrs.map((qr) => {
+                            {qrs && qrs.length > 0 ? qrs.map((qr: any) => {
                                 const active = isPro || (!qr.expires_at || isAfter(parseISO(qr.expires_at), new Date()))
                                 const scans = qr.scans?.[0]?.count || 0
                                 return (
