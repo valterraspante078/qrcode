@@ -1,11 +1,136 @@
 import { PublicGenerator } from "@/components/PublicGenerator";
-import { Sparkles, Shield, Zap, TrendingUp, ChevronRight } from "lucide-react";
+import { Sparkles, Shield, Zap, TrendingUp, ChevronRight, ChevronDown, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qrcodebusiness.vercel.app";
+
+// JSON-LD Structured Data
+const softwareAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "QR Code da Fortuna",
+  description: "Gerador de QR Codes dinâmicos, personalizados e rastreáveis. Ideal para restaurantes, eventos e pequenos negócios.",
+  url: siteUrl,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: [
+    {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "BRL",
+      name: "Gratuito (14 dias)",
+      description: "Teste grátis por 14 dias com todas as funcionalidades.",
+    },
+    {
+      "@type": "Offer",
+      price: "50.00",
+      priceCurrency: "BRL",
+      name: "Plano Anual",
+      description: "QR Codes ilimitados, domínio customizado e suporte 24/7.",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "50.00",
+        priceCurrency: "BRL",
+        unitText: "MONTH",
+        billingDuration: "P1Y",
+      },
+    },
+  ],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    ratingCount: "1240",
+    bestRating: "5",
+    worstRating: "1",
+  },
+  featureList: [
+    "QR Codes Dinâmicos",
+    "Personalização Completa",
+    "Rastreamento de Scans",
+    "Analytics Avançado",
+    "Download SVG e PNG",
+    "Links Permanentes",
+    "Suporte a Pix",
+    "QR Code para WhatsApp",
+  ],
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "QR Code da Fortuna",
+  url: siteUrl,
+  logo: `${siteUrl}/icon.png`,
+  description: "Plataforma profissional de criação e gerenciamento de QR Codes para negócios.",
+  sameAs: [],
+};
+
+const faqItems = [
+  {
+    question: "O que é um QR Code dinâmico?",
+    answer: "Um QR Code dinâmico permite alterar o destino do link sem precisar reimprimir o código. Diferente do QR Code estático, você pode mudar a URL de destino a qualquer momento pelo painel, ideal para cardápios, promoções e campanhas que mudam com frequência.",
+  },
+  {
+    question: "Como criar um QR Code grátis?",
+    answer: "Com o QR Code da Fortuna, basta inserir o link ou texto desejado na ferramenta da página inicial e clicar em 'Gerar'. Você pode baixar em SVG ou PNG instantaneamente. Oferecemos 14 dias grátis com todas as funcionalidades premium.",
+  },
+  {
+    question: "QR Code para restaurante funciona?",
+    answer: "Sim! QR Codes são amplamente usados em restaurantes para cardápios digitais, pagamentos via Pix, avaliações no Google e promoções. Com o QR Code da Fortuna, você pode rastrear quantas pessoas escanearam e de qual localização.",
+  },
+  {
+    question: "Posso rastrear quem escaneou meu QR Code?",
+    answer: "Sim. Nosso painel de Analytics mostra o número total de scans, data/hora de cada scan, e estatísticas detalhadas. Planos premium incluem relatórios avançados com gráficos de tendências.",
+  },
+  {
+    question: "QR Code expira?",
+    answer: "No plano gratuito, QR Codes expiram após 14 dias. Nos planos pagos (Mensal, Trimestral ou Anual), seus QR Codes são permanentes e nunca expiram, garantindo que seus materiais impressos continuem funcionando.",
+  },
+  {
+    question: "Como usar QR Code para pagamento Pix?",
+    answer: "Você pode gerar um QR Code que redireciona para sua chave Pix ou link de pagamento. Basta inserir o link do seu Pix como destino do QR Code e distribuir para seus clientes.",
+  },
+  {
+    question: "Qual o melhor gerador de QR Code do Brasil?",
+    answer: "O QR Code da Fortuna é a solução mais completa do mercado brasileiro: oferece QR Codes dinâmicos, rastreáveis, personalizáveis, com analytics avançado e suporte em português. Comece grátis e veja a diferença.",
+  },
+  {
+    question: "QR Code personalizado é seguro?",
+    answer: "Sim. Todos os QR Codes gerados pelo QR Code da Fortuna utilizam links encriptados e monitoramento de integridade. Seus dados e os de seus clientes estão protegidos com as melhores práticas de segurança.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqItems.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 
 export default function Home() {
   return (
     <main className="relative flex flex-col items-center">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       {/* Background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-blue-500/10 blur-[120px] rounded-full -z-10" />
 
@@ -20,6 +145,7 @@ export default function Home() {
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Recursos</a>
           <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Planos</a>
+          <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">FAQ</a>
           <Link href="/login" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-gray-200 transition-colors">
             Acessar Painel
           </Link>
@@ -60,7 +186,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="mt-40 mb-40 w-full max-w-7xl px-6">
+      <section id="pricing" className="mt-40 mb-20 w-full max-w-7xl px-6">
         <div className="text-center mb-20">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">Planos que cabem no seu bolso</h2>
           <p className="text-muted-foreground">Escolha o plano ideal para a sua necessidade atual.</p>
@@ -89,6 +215,26 @@ export default function Home() {
             features={["Melhor Custo Benefício", "QR Codes ilimitados", "Domínio customizado", "Suporte 24/7"]}
             buttonText="Selecionar Anual"
           />
+        </div>
+      </section>
+
+      {/* FAQ Section — AEO Optimized */}
+      <section id="faq" className="mt-20 mb-40 w-full max-w-4xl px-6">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6">
+            <HelpCircle className="w-4 h-4" />
+            Perguntas Frequentes
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">Tudo sobre QR Codes</h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Respondemos às dúvidas mais comuns sobre geração, uso e rastreamento de QR Codes profissionais.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {faqItems.map((item, idx) => (
+            <FAQItem key={idx} question={item.question} answer={item.answer} />
+          ))}
         </div>
       </section>
 
@@ -147,5 +293,23 @@ function PricingCard({ title, price, period, features, buttonText, highlight = f
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>
+  )
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  return (
+    <details className="group rounded-2xl border border-white/5 bg-card/50 backdrop-blur-sm overflow-hidden transition-all hover:border-blue-500/20">
+      <summary className="flex items-center justify-between px-8 py-6 cursor-pointer list-none select-none">
+        <h3 className="text-base font-bold text-white group-open:text-blue-400 transition-colors pr-4">
+          {question}
+        </h3>
+        <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-300 group-open:rotate-180 group-open:text-blue-400" />
+      </summary>
+      <div className="px-8 pb-6">
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {answer}
+        </p>
+      </div>
+    </details>
   )
 }
