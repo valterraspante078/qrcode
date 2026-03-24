@@ -7,7 +7,16 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
-// ... (rest of imports)
+
+const lexend = Lexend({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+export const metadata: Metadata = {
+  title: "QR Code da Fortuna | Gere QR Codes que Vendem",
+  description: "Crie QR Codes profissionais em segundos. Grátis por 14 dias.",
+};
 
 export default function RootLayout({
   children,
