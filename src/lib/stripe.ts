@@ -1,0 +1,6 @@
+import Stripe from "stripe";
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-01-28.clover" as any, // Adjusted to match the specific version required by the type system
+    typescript: true,
+});

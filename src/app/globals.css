@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Lexend", system-ui, sans-serif;
+  
+  --color-primary: oklch(0.6 0.25 260);
+  --color-primary-foreground: oklch(0.98 0.01 260);
+  
+  --color-accent: oklch(0.7 0.2 20);
+  --color-accent-foreground: oklch(0.98 0.01 20);
+}
+
+:root {
+  --background: oklch(0.1 0.02 260);
+  --foreground: oklch(0.98 0.01 260);
+  
+  --card: oklch(0.15 0.02 260);
+  --card-foreground: oklch(0.98 0.01 260);
+  
+  --border: oklch(0.25 0.02 260);
+  --input: oklch(0.2 0.02 260);
+  --ring: oklch(0.6 0.25 260);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #60a5fa, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.animate-glow {
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+}
