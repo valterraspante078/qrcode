@@ -10,6 +10,15 @@ import { QRRowActions } from "@/components/dashboard/QRRowActions"
 
 export default async function DashboardPage() {
     const supabase = await createClient()
+
+    if (!supabase) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Aguardando configuração do Supabase...</p>
+            </div>
+        )
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
@@ -36,8 +45,8 @@ export default async function DashboardPage() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
 
-    const totalScans = qrs?.reduce((acc, qr) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
-    const activeQrs = qrs?.filter(qr => {
+    const totalScans = qrs?.reduce((acc: number, qr: any) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
+    const activeQrs = qrs?.filter((qr: any) => {
         if (isPro) return true
         if (!qr.expires_at) return true
         return isAfter(parseISO(qr.expires_at), new Date())

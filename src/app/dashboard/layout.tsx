@@ -17,6 +17,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pageTitle = pathname.split("/").pop() || "Geral"
 
     const handleSignOut = async () => {
+        if (!supabase) return
         await supabase.auth.signOut()
         router.push("/")
         router.refresh()

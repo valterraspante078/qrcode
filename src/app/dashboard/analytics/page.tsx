@@ -23,7 +23,13 @@ export default function AnalyticsPage() {
     const supabase = createClient()
 
     useEffect(() => {
-        async function fetchData() {
+        const supabase = createClient()
+        if (!supabase) {
+            setLoading(false)
+            return
+        }
+
+        async function fetchStats() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
@@ -48,7 +54,7 @@ export default function AnalyticsPage() {
             setLoading(false)
         }
 
-        fetchData()
+        fetchStats()
     }, [])
 
     const processAnalytics = (data: any[]) => {

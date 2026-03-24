@@ -33,6 +33,10 @@ export default function SettingsPage() {
 
     useEffect(() => {
         async function fetchUser() {
+            if (!supabase) {
+                setLoading(false)
+                return
+            }
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
             setUser(user)
