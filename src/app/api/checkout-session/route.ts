@@ -13,6 +13,10 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!stripe) {
+        return NextResponse.json({ error: "Stripe is not configured" }, { status: 500 });
+    }
+
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
