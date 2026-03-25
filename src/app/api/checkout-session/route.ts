@@ -17,6 +17,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Stripe is not configured" }, { status: 500 });
     }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    if (!siteUrl || !siteUrl.startsWith("http")) {
+        return NextResponse.json({ error: "Configuração NEXT_PUBLIC_SITE_URL inválida ou ausente no servidor." }, { status: 500 });
+    }
+
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -27,8 +32,8 @@ export async function POST(req: Request) {
                 },
             ],
             mode: "subscription",
-            success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?success=true`,
-            cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?canceled=true`,
+            success_url: `${siteUrl}/dashboard?success=true`,
+            cancel_url: `${siteUrl}/dashboard?canceled=true`,
             client_reference_id: user.id,
             customer_email: user.email,
         });
