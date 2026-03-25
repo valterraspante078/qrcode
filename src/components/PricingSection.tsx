@@ -19,11 +19,16 @@ export function PricingSection() {
     const supabase = createClient()
 
     const handleCheckout = async (priceId: string) => {
+        if (!supabase) {
+            alert("Erro: Conexão com o banco de dados não configurada. Verifique as variáveis de ambiente NEXT_PUBLIC_SUPABASE_URL e KEY.")
+            return
+        }
+
         setLoading(priceId)
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            const { data, error } = await supabase.auth.getUser()
             
-            if (!user) {
+            if (error || !data.user) {
                 // Se não estiver logado, manda pro login
                 window.location.href = "/login?redirect=/dashboard/billing"
                 return
@@ -34,12 +39,19 @@ export function PricingSection() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ priceId })
             })
-            const data = await res.json()
-            if (data.url) {
-                window.location.href = data.url
+            
+            if (!res.ok) {
+                const errorData = await res.json()
+                throw new Error(errorData.error || "Erro ao criar sessão de checkout")
             }
-        } catch (err) {
+
+            const checkoutData = await res.json()
+            if (checkoutData.url) {
+                window.location.href = checkoutData.url
+            }
+        } catch (err: any) {
             console.error(err)
+            alert(`Erro no checkout: ${err.message}`)
         } finally {
             setLoading(null)
         }

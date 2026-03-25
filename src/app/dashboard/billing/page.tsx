@@ -3,11 +3,18 @@
 import { useState } from "react"
 import { Check, Zap, ChevronRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
 export default function BillingPage() {
     const [loading, setLoading] = useState<string | null>(null)
+    const supabase = createClient()
 
     const handleCheckout = async (priceId: string) => {
+        if (!supabase) {
+            alert("Erro: Conexão com o banco de dados não configurada.")
+            return
+        }
+
         setLoading(priceId)
         try {
             const res = await fetch("/api/checkout-session", {
@@ -15,12 +22,19 @@ export default function BillingPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ priceId })
             })
+
+            if (!res.ok) {
+                const errorData = await res.json()
+                throw new Error(errorData.error || "Erro ao criar sessão de checkout")
+            }
+
             const data = await res.json()
             if (data.url) {
                 window.location.href = data.url
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err)
+            alert(`Erro no checkout: ${err.message}`)
         } finally {
             setLoading(null)
         }
