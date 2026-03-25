@@ -30,37 +30,49 @@ export default function LoginPage() {
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
+        
+        if (!supabase) {
+            setError("Erro: Configuração do Supabase ausente. Verifique as variáveis de ambiente.")
+            return
+        }
+
         setLoading(true)
         setError(null)
 
-        const { data, error } = isSignUp
-            ? await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
+        try {
+            const { data, error } = isSignUp
+                ? await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/auth/callback`
+                    }
+                })
+                : await supabase.auth.signInWithPassword({ email, password })
+
+            console.log("Resultado da Autenticação:", { data, error })
+
+            if (error) {
+                let translatedError = error.message;
+                if (error.message === "Invalid login credentials") {
+                    translatedError = "E-mail ou senha incorretos.";
+                } else if (error.message === "User already registered") {
+                    translatedError = "Este e-mail já está em uso.";
+                } else if (error.message === "Password should be at least 6 characters") {
+                    translatedError = "A senha deve ter pelo menos 6 caracteres.";
                 }
-            })
-            : await supabase.auth.signInWithPassword({ email, password })
-
-        console.log("Resultado da Autenticação:", { data, error })
-
-        if (error) {
-            let translatedError = error.message;
-            if (error.message === "Invalid login credentials") {
-                translatedError = "E-mail ou senha incorretos.";
-            } else if (error.message === "User already registered") {
-                translatedError = "Este e-mail já está em uso.";
-            } else if (error.message === "Password should be at least 6 characters") {
-                translatedError = "A senha deve ter pelo menos 6 caracteres.";
+                setError(translatedError)
+            } else if (data.user || data.session) {
+                console.log("Sucesso! Redirecionando...")
+                router.push("/dashboard")
+                router.refresh()
             }
-            setError(translatedError)
-        } else if (data.user || data.session) {
-            console.log("Sucesso! Redirecionando...")
-            router.push("/dashboard")
-            router.refresh()
+        } catch (err: any) {
+            console.error("Erro inesperado na autenticação:", err)
+            setError(`Erro inesperado: ${err.message || "Tente novamente mais tarde."}`)
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     return (
