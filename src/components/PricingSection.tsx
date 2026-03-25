@@ -3,13 +3,32 @@
 import { useState } from "react"
 import { Check, Zap, ChevronRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
-export default function BillingPage() {
+interface PricingCardProps {
+    title: string
+    price: string
+    period: string
+    priceId: string
+    features: string[]
+    highlight?: boolean
+}
+
+export function PricingSection() {
     const [loading, setLoading] = useState<string | null>(null)
+    const supabase = createClient()
 
     const handleCheckout = async (priceId: string) => {
         setLoading(priceId)
         try {
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            if (!user) {
+                // Se não estiver logado, manda pro login
+                window.location.href = "/login?redirect=/dashboard/billing"
+                return
+            }
+
             const res = await fetch("/api/checkout-session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -27,10 +46,13 @@ export default function BillingPage() {
     }
 
     return (
-        <div className="space-y-10">
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold">Planos e Assinatura</h1>
-                <p className="text-muted-foreground italic">Pague para manter seus códigos funcionando para sempre.</p>
+        <section id="pricing" className="mt-40 mb-20 w-full max-w-7xl px-6">
+            <div className="text-center mb-20">
+                <h2 className="text-3xl md:text-5xl font-bold mb-6">Planos que cabem no seu bolso</h2>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold uppercase tracking-widest mb-4">
+                    🔥 50% de DESCONTO POR TEMPO LIMITADO
+                </div>
+                <p className="text-muted-foreground mt-2">Escolha o plano ideal para a sua necessidade atual.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -49,7 +71,7 @@ export default function BillingPage() {
                     period="mês"
                     priceId="price_1TEsDMLrEod9tlUtxljXtxXN"
                     highlight
-                    features={["Pagamento de R$75 a cada 3 meses", "QR Codes ilimitados", "Analytics premium", "Suporte prioritário"]}
+                    features={["Cobrado R$75 trimestralmente", "QR Codes ilimitados", "Analytics premium", "Suporte prioritário"]}
                     onSelect={handleCheckout}
                     loading={loading === "price_1TEsDMLrEod9tlUtxljXtxXN"}
                 />
@@ -58,49 +80,21 @@ export default function BillingPage() {
                     price="12,50"
                     period="mês"
                     priceId="price_1TEsDuLrEod9tlUtPRPG12oa"
-                    features={["Pagamento de R$150 anual", "QR Codes ilimitados", "Domínio customizado", "Suporte 24/7"]}
+                    features={["Cobrado R$150 anualmente", "Melhor Custo Benefício", "Domínio customizado", "Suporte 24/7"]}
                     onSelect={handleCheckout}
                     loading={loading === "price_1TEsDuLrEod9tlUtPRPG12oa"}
                 />
             </div>
-
-            <div className="pt-10 border-t border-white/5">
-                <h3 className="text-xl font-bold mb-4">Gerenciar Assinatura</h3>
-                <p className="text-sm text-muted-foreground mb-6 text-balance">
-                    Deseja trocar de plano, atualizar seu cartão de crédito ou cancelar sua assinatura? 
-                    Use o Portal do Cliente do Stripe para gerenciar tudo em um só lugar.
-                </p>
-                <button 
-                    onClick={async () => {
-                        const res = await fetch("/api/portal", { method: "POST" })
-                        const data = await res.json()
-                        if (data.url) window.location.href = data.url
-                    }}
-                    className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all flex items-center gap-2"
-                >
-                    Acessar Portal do Cliente
-                    <ChevronRight className="w-4 h-4" />
-                </button>
-            </div>
-
-            <p className="text-xs text-center text-muted-foreground mt-10">
-                Lembre-se: Verifique se as variáveis de ambiente do Stripe estão configuradas no Vercel para o modo produção.
-            </p>
-        </div>
+        </section>
     )
 }
 
 function PricingCard({ title, price, period, features, highlight = false, onSelect, priceId, loading }: any) {
     return (
         <div className={cn(
-            "p-8 rounded-[2rem] border transition-all flex flex-col relative overflow-hidden",
-            highlight ? "bg-blue-600 border-blue-400 shadow-2xl scale-105 z-10" : "bg-card border-white/5"
+            "p-10 rounded-[2.5rem] border transition-all flex flex-col relative",
+            highlight ? "bg-blue-600 border-blue-400 shadow-2xl shadow-blue-500/20 scale-105 z-10" : "bg-card border-white/5"
         )}>
-            {highlight && (
-                <div className="absolute top-4 right-4 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tighter">
-                    Mais Popular
-                </div>
-            )}
             <h3 className="text-xl font-bold mb-4">{title}</h3>
             <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-4xl font-extrabold">R${price}</span>
@@ -109,7 +103,7 @@ function PricingCard({ title, price, period, features, highlight = false, onSele
             <ul className="space-y-4 mb-10 flex-1">
                 {features.map((feature: string, idx: number) => (
                     <li key={idx} className="flex items-center gap-3 text-sm">
-                        <Check className={cn("w-4 h-4", highlight ? "text-white" : "text-blue-500")} />
+                        <div className={cn("w-1.5 h-1.5 rounded-full", highlight ? "bg-white" : "bg-blue-500")} />
                         {feature}
                     </li>
                 ))}

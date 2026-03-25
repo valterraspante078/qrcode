@@ -1,15 +1,16 @@
 import { PublicGenerator } from "@/components/PublicGenerator";
-import { Sparkles, Shield, Zap, TrendingUp, ChevronRight, ChevronDown, HelpCircle } from "lucide-react";
+import { Sparkles, Shield, Zap, TrendingUp, ChevronRight, ChevronDown, HelpCircle, Check } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { PricingSection } from "@/components/PricingSection";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qrcodebusiness.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
 
 // JSON-LD Structured Data
 const softwareAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "QR Code da Fortuna",
+  name: "Gerador de Qr Code",
   description: "Gerador de QR Codes dinâmicos, personalizados e rastreáveis. Ideal para restaurantes, eventos e pequenos negócios.",
   url: siteUrl,
   applicationCategory: "BusinessApplication",
@@ -59,7 +60,7 @@ const softwareAppJsonLd = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "QR Code da Fortuna",
+  name: "Gerador de Qr Code",
   url: siteUrl,
   logo: `${siteUrl}/icon.png`,
   description: "Plataforma profissional de criação e gerenciamento de QR Codes para negócios.",
@@ -73,11 +74,11 @@ const faqItems = [
   },
   {
     question: "Como criar um QR Code grátis?",
-    answer: "Com o QR Code da Fortuna, basta inserir o link ou texto desejado na ferramenta da página inicial e clicar em 'Gerar'. Você pode baixar em SVG ou PNG instantaneamente. Oferecemos 14 dias grátis com todas as funcionalidades premium.",
+    answer: "Com o Gerador de Qr Code, basta inserir o link ou texto desejado na ferramenta da página inicial e clicar em 'Gerar'. Você pode baixar em SVG ou PNG instantaneamente. Oferecemos 14 dias grátis com todas as funcionalidades premium.",
   },
   {
     question: "QR Code para restaurante funciona?",
-    answer: "Sim! QR Codes são amplamente usados em restaurantes para cardápios digitais, pagamentos via Pix, avaliações no Google e promoções. Com o QR Code da Fortuna, você pode rastrear quantas pessoas escanearam e de qual localização.",
+    answer: "Sim! QR Codes são amplamente usados em restaurantes para cardápios digitais, pagamentos via Pix, avaliações no Google e promoções. Com o Gerador de Qr Code, você pode rastrear quantas pessoas escanearam e de qual localização.",
   },
   {
     question: "Posso rastrear quem escaneou meu QR Code?",
@@ -93,11 +94,11 @@ const faqItems = [
   },
   {
     question: "Qual o melhor gerador de QR Code do Brasil?",
-    answer: "O QR Code da Fortuna é a solução mais completa do mercado brasileiro: oferece QR Codes dinâmicos, rastreáveis, personalizáveis, com analytics avançado e suporte em português. Comece grátis e veja a diferença.",
+    answer: "O Gerador de Qr Code é a solução mais completa do mercado brasileiro: oferece QR Codes dinâmicos, rastreáveis, personalizáveis, com analytics avançado e suporte em português. Comece grátis e veja a diferença.",
   },
   {
     question: "QR Code personalizado é seguro?",
-    answer: "Sim. Todos os QR Codes gerados pelo QR Code da Fortuna utilizam links encriptados e monitoramento de integridade. Seus dados e os de seus clientes estão protegidos com as melhores práticas de segurança.",
+    answer: "Sim. Todos os QR Codes gerados pelo Gerador de Qr Code utilizam links encriptados e monitoramento de integridade. Seus dados e os de seus clientes estão protegidos com as melhores práticas de segurança.",
   },
 ];
 
@@ -140,7 +141,7 @@ export default function Home() {
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
             <Zap className="text-white w-6 h-6 fill-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight">QR Fortuna</span>
+          <span className="text-xl font-bold tracking-tight">Gerador de Qr Code</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Recursos</a>
@@ -155,68 +156,73 @@ export default function Home() {
       {/* Hero Section */}
       <section className="mt-20 px-6 text-center space-y-8 max-w-4xl">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1]">
-          Gere <span className="gradient-text">QR Codes</span> que <br className="hidden md:block" /> impulsionam sua fortuna.
+          O Melhor <span className="gradient-text">Gerador de QR Code</span> Dinâmico do Brasil.
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-          Crie, personalize e rastreie seus QR codes com tecnologia de ponta. Comece grátis, scale para o infinito.
+          Crie códigos rastreáveis, personalizados e profissionais em segundos. Gerencie sua presença digital e impulsione suas conversões hoje mesmo.
         </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <Check className="w-4 h-4 text-green-500" />
+            14 Dias Grátis
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="w-4 h-4 text-green-500" />
+            Sem Cartão de Crédito
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="w-4 h-4 text-green-500" />
+            Suporte em Português
+          </div>
+        </div>
 
         <div className="pt-10">
           <PublicGenerator />
         </div>
       </section>
 
+      {/* Social Proof Section (NEW) */}
+      <section className="mt-20 px-6 w-full max-w-7xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <div className="py-10 border-y border-white/5 flex flex-col md:flex-row items-center justify-center gap-12 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
+          <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground md:mr-4">Confiado por:</p>
+          <div className="flex flex-wrap justify-center gap-12 items-center">
+             <div className="text-xl font-black italic tracking-tighter">TECH.CORP</div>
+             <div className="text-xl font-serif font-bold italic tracking-tighter">RESTAURANTE.BIO</div>
+             <div className="text-xl font-sans font-extrabold tracking-tighter">AGÊNCIA_X</div>
+             <div className="text-xl font-mono font-bold tracking-tighter">STARTUP.NET</div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section id="features" className="mt-40 grid grid-cols-1 md:grid-cols-3 gap-8 px-6 max-w-7xl">
-        <FeatureCard
-          icon={<Shield className="w-6 h-6 text-blue-400" />}
-          title="Segurança Máxima"
-          description="Links protegidos e monitoramento constante de integridade dos seus dados."
-        />
-        <FeatureCard
-          icon={<Zap className="w-6 h-6 text-purple-400" />}
-          title="Alta Velocidade"
-          description="Geração instantânea e redirecionamento de baixa latência para seus clientes."
-        />
-        <FeatureCard
-          icon={<TrendingUp className="w-6 h-6 text-green-400" />}
-          title="Analytics Avançado"
-          description="Saiba exatamente quem, quando e de onde estão escaneando seus códigos."
-        />
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="mt-40 mb-20 w-full max-w-7xl px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Planos que cabem no seu bolso</h2>
-          <p className="text-muted-foreground">Escolha o plano ideal para a sua necessidade atual.</p>
+      <section id="features" className="mt-40 px-6 max-w-7xl w-full">
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-3xl md:text-5xl font-bold">Por que usar o nosso Gerador de QR Code?</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Desenvolvido para negócios que buscam performance, segurança e resultados mensuráveis.
+          </p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <PricingCard
-            title="Mensal"
-            price="197"
-            period="mês"
-            features={["QR Codes ilimitados", "Analytics premium", "Suporte VIP"]}
-            buttonText="Começar Agora"
+          <FeatureCard
+            icon={<Shield className="w-6 h-6 text-blue-400" />}
+            title="Segurança Máxima"
+            description="Links protegidos com SSL e monitoramento constante de integridade para sua total tranquilidade."
           />
-          <PricingCard
-            title="Trimestral"
-            price="100"
-            period="mês"
-            highlight
-            features={["Economize 30%", "QR Codes ilimitados", "Analytics premium", "Suporte prioritário"]}
-            buttonText="Selecionar Trimestral"
+          <FeatureCard
+            icon={<Zap className="w-6 h-6 text-purple-400" />}
+            title="Sessões Dinâmicas"
+            description="Altere a URL de destino dos seus códigos em tempo real sem precisar reimprimir nada."
           />
-          <PricingCard
-            title="Anual"
-            price="50"
-            period="mês"
-            features={["Melhor Custo Benefício", "QR Codes ilimitados", "Domínio customizado", "Suporte 24/7"]}
-            buttonText="Selecionar Anual"
+          <FeatureCard
+            icon={<TrendingUp className="w-6 h-6 text-green-400" />}
+            title="Analytics em Tempo Real"
+            description="Acompanhe quem, quando e de onde estão escanneando. Dados precisos para decisões inteligentes."
           />
         </div>
       </section>
+
+      <PricingSection />
 
       {/* FAQ Section — AEO Optimized */}
       <section id="faq" className="mt-20 mb-40 w-full max-w-4xl px-6">
@@ -225,7 +231,7 @@ export default function Home() {
             <HelpCircle className="w-4 h-4" />
             Perguntas Frequentes
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Tudo sobre QR Codes</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">Guia Completo: Dúvidas sobre o Gerador de Qr Code</h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
             Respondemos às dúvidas mais comuns sobre geração, uso e rastreamento de QR Codes profissionais.
           </p>
@@ -240,15 +246,55 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-white/5 py-20 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-2">
-            <Zap className="text-blue-600 w-5 h-5 fill-blue-600" />
-            <span className="font-bold">QR Fortuna</span>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Zap className="text-blue-600 w-5 h-5 fill-blue-600" />
+              <span className="font-bold">Gerador de Qr Code</span>
+            </div>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              A maior plataforma de QR Codes dinâmicos do Brasil. Criada para empresas que buscam inteligência e crescimento.
+            </p>
           </div>
-          <p className="text-muted-foreground text-sm">© 2026 QR Code da Fortuna. Todos os direitos reservados.</p>
-          <div className="flex gap-8 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-white transition-colors">Privacidade</a>
-            <a href="#" className="hover:text-white transition-colors">Termos</a>
+          
+          <div>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Produtos</h4>
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-white transition-colors">QR Code Dinâmico</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">QR Code para Pix</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">QR Code para WhatsApp</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Menus Digitais</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Empresa</h4>
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Blog de SEO</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Afiliados</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Contato</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Legal</h4>
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Privacidade</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-muted-foreground text-sm">© 2026 Gerador de Qr Code. Todos os direitos reservados.</p>
+          <div className="flex gap-4 text-xs text-muted-foreground/30 italic">
+            <span>Gerador de QR Code Online</span>
+            <span>•</span>
+            <span>Criar QR Code Grátis</span>
+            <span>•</span>
+            <span>Analytics de QR Code</span>
           </div>
         </div>
       </footer>
@@ -262,36 +308,6 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
       <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">{icon}</div>
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
-    </div>
-  )
-}
-
-function PricingCard({ title, price, period, features, buttonText, highlight = false }: { title: string, price: string, period: string, features: string[], buttonText: string, highlight?: boolean }) {
-  return (
-    <div className={cn(
-      "p-10 rounded-[2.5rem] border transition-all flex flex-col",
-      highlight ? "bg-blue-600 border-blue-400 shadow-2xl shadow-blue-500/20 scale-105" : "bg-card border-white/5"
-    )}>
-      <h3 className="text-xl font-bold mb-4">{title}</h3>
-      <div className="flex items-baseline gap-1 mb-8">
-        <span className="text-4xl font-extrabold">R${price}</span>
-        <span className="text-sm opacity-60">/{period}</span>
-      </div>
-      <ul className="space-y-4 mb-10 flex-1">
-        {features.map((feature, idx) => (
-          <li key={idx} className="flex items-center gap-3 text-sm">
-            <div className={cn("w-1.5 h-1.5 rounded-full", highlight ? "bg-white" : "bg-blue-500")} />
-            {feature}
-          </li>
-        ))}
-      </ul>
-      <button className={cn(
-        "w-full py-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2",
-        highlight ? "bg-white text-black hover:bg-gray-100" : "bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20"
-      )}>
-        {buttonText}
-        <ChevronRight className="w-4 h-4" />
-      </button>
     </div>
   )
 }

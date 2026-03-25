@@ -33,7 +33,7 @@ export default async function ExpiredPage({
                     <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
                         <Zap className="text-white w-6 h-6 fill-white" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight">QR Fortuna</span>
+                    <span className="text-xl font-bold tracking-tight">Gerador de Qr Code</span>
                 </div>
 
                 {/* Main Card */}
@@ -80,7 +80,7 @@ export default async function ExpiredPage({
                 </div>
 
                 <p className="mt-12 text-center text-gray-500 text-sm">
-                    © 2026 QR Code da Fortuna. Gerencie seus links com inteligência.
+                    © 2026 Gerador de Qr Code. Gerencie seus links com inteligência.
                 </p>
             </div>
         </main>

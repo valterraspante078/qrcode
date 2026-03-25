@@ -57,7 +57,7 @@ export default async function DashboardPage() {
             {/* Welcome Card */}
             <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-blue-600 to-blue-800 border border-blue-400 overflow-hidden shadow-2xl">
                 <div className="relative z-10 space-y-4">
-                    <h1 className="text-3xl font-bold italic tracking-tight uppercase">Boas-vindas ao seu Império, {profile?.display_name || user.email?.split("@")[0]}</h1>
+                    <h1 className="text-3xl font-bold italic tracking-tight uppercase">Boas-vindas ao seu Painel, {profile?.display_name || user.email?.split("@")[0]}</h1>
                     <p className="text-blue-100 max-w-xl">
                         Seus códigos estão gerando fortuna. {isPro ? "Aproveite seu acesso ilimitado PRO." : "Você está no plano limitado FREE."}
                     </p>

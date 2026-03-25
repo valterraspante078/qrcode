@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                         <Database className="w-5 h-5" />
                     </div>
-                    <span className="font-bold text-lg tracking-tight">QR Fortuna</span>
+                    <span className="font-bold text-lg tracking-tight">Gerador de Qr Code</span>
                 </div>
 
                 <nav className="flex-1 space-y-1">
@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title="Novo QR Code de Elite"
+                title="Novo QR Code"
             >
                 <div className="p-4">
                     <PublicGenerator hideStyles={true} />

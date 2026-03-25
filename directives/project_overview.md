@@ -1,6 +1,6 @@
 # Project Overview
 
-This directive provides a high-level overview of the "QR CODE DA FORTUNA" project.
+This directive provides a high-level overview of the "Gerador de Qr Code" project.
 
 ## Goals
 - Create a Micro-SaaS for generating and managing QR codes.

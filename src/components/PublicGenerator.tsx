@@ -54,7 +54,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
             const url = URL.createObjectURL(svgBlob)
             const link = document.createElement("a")
             link.href = url
-            link.download = `qrcode-fortuna-${currentId || Date.now()}.svg`
+            link.download = `gerador-qrcode-${currentId || Date.now()}.svg`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

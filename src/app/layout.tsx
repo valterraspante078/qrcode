@@ -14,35 +14,33 @@ const lexend = Lexend({
   variable: "--font-display",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qrcodebusiness.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "QR Code da Fortuna | Gerador de QR Code Profissional",
-    template: "%s | QR Code da Fortuna",
+    default: "Gerador de QR Code Grátis | Criar QR Code Dinâmico e Pix",
+    template: "%s | Gerador de Qr Code",
   },
   description:
-    "Crie QR Codes dinâmicos, personalizados e rastreáveis em segundos. Ideal para restaurantes, eventos e pequenos negócios. Comece grátis agora.",
+    "Crie QR Codes profissionais, dinâmicos e rastreáveis em segundos. Personalize com sua marca, gere códigos para Pix, WhatsApp e links. O melhor Gerador de Qr Code do Brasil.",
   keywords: [
     "gerador de qr code",
-    "qr code grátis",
+    "criar qr code",
     "qr code dinâmico",
+    "qr code pix",
+    "qr code grátis",
     "qr code para restaurante",
     "qr code para cardápio",
     "qr code personalizado",
-    "criar qr code",
     "qr code rastreável",
-    "qr code para pix",
     "qr code para whatsapp",
-    "qr code para eventos",
     "melhor gerador de qr code",
-    "qr code online",
-    "qr code business",
+    "gerar qr code online",
   ],
-  authors: [{ name: "QR Code da Fortuna" }],
-  creator: "QR Code da Fortuna",
-  publisher: "QR Code da Fortuna",
+  authors: [{ name: "Gerador de Qr Code" }],
+  creator: "Gerador de Qr Code",
+  publisher: "Gerador de Qr Code",
   robots: {
     index: true,
     follow: true,
@@ -58,8 +56,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
-    siteName: "QR Code da Fortuna",
-    title: "QR Code da Fortuna | Gerador de QR Code Profissional",
+    siteName: "Gerador de Qr Code",
+    title: "Gerador de Qr Code | Criar QR Code Profissional Grátis",
     description:
       "Crie QR Codes dinâmicos, personalizados e rastreáveis em segundos. Comece grátis.",
     images: [
@@ -73,7 +71,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QR Code da Fortuna | Gerador de QR Code Profissional",
+    title: "Gerador de Qr Code | Criar QR Code Profissional Grátis",
     description:
       "Crie QR Codes dinâmicos e rastreáveis em segundos. Comece grátis.",
     images: ["/og-image.png"],
