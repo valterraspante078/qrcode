@@ -1,8 +1,12 @@
 import { PublicGenerator } from "@/components/PublicGenerator";
 import { Sparkles, Shield, Zap, TrendingUp, ChevronRight, ChevronDown, HelpCircle, Check } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-import { PricingSection } from "@/components/PricingSection";
+
+const PricingSection = dynamic(() => import("@/components/PricingSection").then(mod => mod.PricingSection), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-white/5 rounded-3xl" />
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
 
