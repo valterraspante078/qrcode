@@ -162,36 +162,8 @@ export default function Home() {
           Crie códigos rastreáveis, personalizados e profissionais em segundos. Gerencie sua presença digital e impulsione suas conversões hoje mesmo.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <Check className="w-4 h-4 text-green-500" />
-            14 Dias Grátis
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Check className="w-4 h-4 text-green-500" />
-            Sem Cartão de Crédito
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Check className="w-4 h-4 text-green-500" />
-            Suporte em Português
-          </div>
-        </div>
-
         <div className="pt-10">
           <PublicGenerator />
-        </div>
-      </section>
-
-      {/* Social Proof Section (NEW) */}
-      <section className="mt-20 px-6 w-full max-w-7xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <div className="py-10 border-y border-white/5 flex flex-col md:flex-row items-center justify-center gap-12 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
-          <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground md:mr-4">Confiado por:</p>
-          <div className="flex flex-wrap justify-center gap-12 items-center">
-             <div className="text-xl font-black italic tracking-tighter">TECH.CORP</div>
-             <div className="text-xl font-serif font-bold italic tracking-tighter">RESTAURANTE.BIO</div>
-             <div className="text-xl font-sans font-extrabold tracking-tighter">AGÊNCIA_X</div>
-             <div className="text-xl font-mono font-bold tracking-tighter">STARTUP.NET</div>
-          </div>
         </div>
       </section>
 
