@@ -3,12 +3,16 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const { name } = await request.json()
+    const { name, expires_at } = await request.json()
     const supabase = await createClient()
+
+    const updateData: any = {}
+    if (name !== undefined) updateData.name = name
+    if (expires_at !== undefined) updateData.expires_at = expires_at
 
     const { error } = await supabase
         .from("qr_codes")
-        .update({ name })
+        .update(updateData)
         .eq("id", id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

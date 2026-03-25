@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
-import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Image as ImageIcon } from "lucide-react"
+import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Image as ImageIcon, Clock } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
@@ -11,12 +11,14 @@ interface QRRowActionsProps {
     content: string
     name: string
     publicUrl: string
+    isExpired: boolean
 }
 
-export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps) {
+export function QRRowActions({ id, content, name, publicUrl, isExpired }: QRRowActionsProps) {
     const [showPreview, setShowPreview] = useState(false)
     const [showDownloadMenu, setShowDownloadMenu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isExpiring, setIsExpiring] = useState(false)
     const qrSvgRef = useRef<SVGSVGElement>(null)
     const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
@@ -67,6 +69,30 @@ export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps
             console.error("Erro ao excluir", err)
         } finally {
             setIsDeleting(false)
+        }
+    }
+
+    const handleExpire = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (isExpired) return
+        if (!confirm("Tem certeza que deseja expirar este QR Code imediatamente?")) return
+
+        setIsExpiring(true)
+        try {
+            const res = await fetch(`/api/qr/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    expires_at: new Date().toISOString()
+                }),
+            })
+            if (res.ok) {
+                router.refresh()
+            }
+        } catch (err) {
+            console.error("Erro ao expirar", err)
+        } finally {
+            setIsExpiring(false)
         }
     }
 
@@ -179,6 +205,20 @@ export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps
                         <ExternalLink className="w-4 h-4" />
                     </a>
                 </div>
+
+                {/* EXPIRE */}
+                {!isExpired && (
+                    <div className="flex flex-col items-center gap-1 group/item">
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/0 group-hover/item:text-yellow-400/60 transition-all">Expirar</span>
+                        <button
+                            onClick={handleExpire}
+                            disabled={isExpiring}
+                            className="p-3 bg-white/5 border border-white/5 text-muted-foreground hover:bg-yellow-600 hover:border-yellow-400 hover:text-white rounded-xl transition-all shadow-lg active:scale-90 outline-none disabled:opacity-50"
+                        >
+                            {isExpiring ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4" />}
+                        </button>
+                    </div>
+                )}
 
                 {/* DELETE */}
                 <div className="flex flex-col items-center gap-1 group/item">
