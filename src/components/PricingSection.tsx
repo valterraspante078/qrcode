@@ -110,7 +110,7 @@ function PricingCard({ title, price, period, features, highlight = false, onSele
             <h3 className="text-xl font-bold mb-4">{title}</h3>
             <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-4xl font-extrabold">R${price}</span>
-                <span className="text-sm opacity-60">/{period}</span>
+                <span className={cn("text-sm transition-opacity", highlight ? "text-blue-100" : "opacity-80")}>/{period}</span>
             </div>
             <ul className="space-y-4 mb-10 flex-1">
                 {features.map((feature: string, idx: number) => (

@@ -80,10 +80,10 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
         )}>
             <div className="space-y-6">
                 <div>
-                    <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                    <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
                         <Sparkles className="text-blue-400 w-5 h-5" />
                         Crie seu QR Code agora
-                    </h3>
+                    </h2>
                     <p className="text-muted-foreground text-sm">
                         Insira o link ou texto abaixo para gerar seu QR code permanente.
                     </p>
@@ -126,6 +126,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                                 />
                                 <button
                                     onClick={() => copyToClipboard(publicUrl)}
+                                    aria-label="Copiar link permanente"
                                     className="px-3 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all"
                                 >
                                     {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-blue-400" />}
@@ -153,6 +154,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                             <button
                                 onClick={saveToDb}
                                 disabled={isSaving}
+                                aria-label="Salvar no Dashboard"
                                 className="px-4 h-12 rounded-xl border border-white/10 hover:bg-white/5 transition-colors flex items-center justify-center disabled:opacity-50"
                             >
                                 {isSaving ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 text-blue-400" />}
