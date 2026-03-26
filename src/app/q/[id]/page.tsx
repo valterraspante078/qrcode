@@ -21,10 +21,9 @@ export default async function QRRedirectPage({ params }: { params: Promise<{ id:
     // 1. If user is PRO (active subscription), never expires.
     // 2. If free/public, check if expires_at has passed.
 
-    const isPro = qr.profiles?.subscription_status === "active";
     const hasExpired = qr.expires_at && isAfter(new Date(), parseISO(qr.expires_at));
 
-    if (!isPro && hasExpired) {
+    if (hasExpired) {
         // Redirect to a dedicated expiration page with upgrade CTA
         return redirect(`/expired?id=${id}`);
     }

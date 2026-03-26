@@ -47,9 +47,7 @@ export default async function DashboardPage() {
 
     const totalScans = qrs?.reduce((acc: number, qr: any) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
     const activeQrs = qrs?.filter((qr: any) => {
-        if (isPro) return true
-        if (!qr.expires_at) return true
-        return isAfter(parseISO(qr.expires_at), new Date())
+        return !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
     }).length || 0
 
     return (
@@ -104,7 +102,7 @@ export default async function DashboardPage() {
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {qrs && qrs.length > 0 ? qrs.map((qr: any) => {
-                                const active = isPro || (!qr.expires_at || isAfter(parseISO(qr.expires_at), new Date()))
+                                const active = !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
                                 const scans = qr.scans?.[0]?.count || 0
                                 return (
                                     <tr key={qr.id} className="hover:bg-white/5 transition-colors group">

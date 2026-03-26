@@ -25,7 +25,7 @@ export function QRRowActions({ id, content, name, publicUrl, expiresAt, isPro }:
     const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
 
-    const isActive = isPro || (!expiresAt || isAfter(parseISO(expiresAt), new Date()))
+    const isActive = !expiresAt || isAfter(parseISO(expiresAt), new Date())
 
     const downloadSVG = (e: React.MouseEvent) => {
         e.stopPropagation()
