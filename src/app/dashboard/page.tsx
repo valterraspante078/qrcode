@@ -130,6 +130,8 @@ export default async function DashboardPage() {
                                                 content={qr.content}
                                                 name={qr.name}
                                                 publicUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/q/${qr.id}`}
+                                                expiresAt={qr.expires_at}
+                                                isPro={isPro}
                                             />
                                         </td>
                                     </tr>

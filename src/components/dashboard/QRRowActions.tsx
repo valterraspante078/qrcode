@@ -2,24 +2,30 @@
 
 import { useState, useRef } from "react"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
-import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Image as ImageIcon } from "lucide-react"
+import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Image as ImageIcon, Clock, Play } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { isAfter, parseISO } from "date-fns"
 
 interface QRRowActionsProps {
     id: string
     content: string
     name: string
     publicUrl: string
+    expiresAt?: string | null
+    isPro?: boolean
 }
 
-export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps) {
+export function QRRowActions({ id, content, name, publicUrl, expiresAt, isPro }: QRRowActionsProps) {
     const [showPreview, setShowPreview] = useState(false)
     const [showDownloadMenu, setShowDownloadMenu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isExpiring, setIsExpiring] = useState(false)
     const qrSvgRef = useRef<SVGSVGElement>(null)
     const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
+
+    const isActive = isPro || (!expiresAt || isAfter(parseISO(expiresAt), new Date()))
 
     const downloadSVG = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -67,6 +73,31 @@ export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps
             console.error("Erro ao excluir", err)
         } finally {
             setIsDeleting(false)
+        }
+    }
+
+    const handleToggleExpiration = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        const action = isActive ? "expirar" : "reativar"
+        if (!confirm(`Tem certeza que deseja ${action} este QR Code?`)) return
+
+        setIsExpiring(true)
+        try {
+            const newExpiresAt = isActive ? new Date().toISOString() : null
+            const res = await fetch(`/api/qr/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ expires_at: newExpiresAt }),
+            })
+            if (res.ok) {
+                router.refresh()
+            }
+        } catch (err) {
+            console.error(`Erro ao ${action}`, err)
+        } finally {
+            setIsExpiring(false)
         }
     }
 
@@ -178,6 +209,25 @@ export function QRRowActions({ id, content, name, publicUrl }: QRRowActionsProps
                     >
                         <ExternalLink className="w-4 h-4" />
                     </a>
+                </div>
+
+                {/* EXPIRAR / REATIVAR */}
+                <div className="flex flex-col items-center gap-1 group/item">
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/0 group-hover/item:text-muted-foreground/60 transition-all">
+                        {isActive ? "Expirar" : "Ativar"}
+                    </span>
+                    <button
+                        onClick={handleToggleExpiration}
+                        disabled={isExpiring}
+                        className={cn(
+                            "p-3 rounded-xl transition-all shadow-lg active:scale-90 outline-none border",
+                            isActive 
+                                ? "bg-white/5 border-white/5 text-muted-foreground hover:bg-orange-600 hover:border-orange-400 hover:text-white"
+                                : "bg-orange-600/20 border-orange-500/50 text-orange-400 hover:bg-orange-600 hover:border-orange-400 hover:text-white"
+                        )}
+                    >
+                        {isExpiring ? <Loader2 className="w-4 h-4 animate-spin" /> : isActive ? <Clock className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </button>
                 </div>
 
                 {/* DELETE */}
