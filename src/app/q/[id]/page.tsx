@@ -9,7 +9,7 @@ export default async function QRRedirectPage({ params }: { params: Promise<{ id:
 
     const { data: qr, error } = await supabase
         .from("qr_codes")
-        .select("*, profiles!qr_codes_user_id_fkey(subscription_status)")
+        .select("*")
         .eq("id", id)
         .single();
 
