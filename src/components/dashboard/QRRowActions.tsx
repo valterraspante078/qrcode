@@ -181,18 +181,18 @@ export function QRRowActions({ id, content, name, publicUrl, expiresAt, isPro }:
                         <div className="absolute top-full right-0 mt-2 z-50 w-32 animate-in slide-in-from-top-2 fade-in duration-200">
                             <div className="bg-[#1a1a1a] rounded-xl border border-white/10 shadow-2xl overflow-hidden p-1">
                                 <button
-                                    onClick={downloadSVG}
-                                    className="w-full h-10 px-3 flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white/10 rounded-lg transition-colors"
-                                >
-                                    <div className="w-6 h-6 rounded-md bg-green-500/20 text-green-500 flex items-center justify-center text-[8px]">SVG</div>
-                                    Vetor (Alta)
-                                </button>
-                                <button
                                     onClick={downloadPNG}
                                     className="w-full h-10 px-3 flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white/10 rounded-lg transition-colors"
                                 >
                                     <div className="w-6 h-6 rounded-md bg-blue-500/20 text-blue-500 flex items-center justify-center text-[8px]">PNG</div>
                                     Imagem (HD)
+                                </button>
+                                <button
+                                    onClick={downloadSVG}
+                                    className="w-full h-10 px-3 flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-widest hover:bg-white/10 rounded-lg transition-colors"
+                                >
+                                    <div className="w-6 h-6 rounded-md bg-green-500/20 text-green-500 flex items-center justify-center text-[8px]">SVG</div>
+                                    Vetor (Alta)
                                 </button>
                             </div>
                         </div>

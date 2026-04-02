@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { QRCodeSVG } from "qrcode.react"
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
 import { Download, Copy, Check, Sparkles, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -13,6 +13,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
     const [isSaving, setIsSaving] = useState(false)
     const [qrId, setQrId] = useState<string | null>(null)
     const qrRef = useRef<SVGSVGElement>(null)
+    const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
 
     const saveToDb = async () => {
@@ -38,26 +39,35 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
         }
     }
 
-    const downloadQR = async () => {
+    const downloadQR = async (format: "png" | "svg" = "png") => {
         let currentId = qrId
         if (!currentId) {
             currentId = await saveToDb()
         }
 
-        if (!qrRef.current) return
-
-        // Wait a bit for the SVG to update with the new URL value before capturing
+        // Wait a bit for the QR to update with the new URL value before capturing
         setTimeout(() => {
-            if (!qrRef.current) return
-            const svgData = new XMLSerializer().serializeToString(qrRef.current)
-            const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" })
-            const url = URL.createObjectURL(svgBlob)
-            const link = document.createElement("a")
-            link.href = url
-            link.download = `gerador-qrcode-${currentId || Date.now()}.svg`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            if (format === "svg") {
+                if (!qrRef.current) return
+                const svgData = new XMLSerializer().serializeToString(qrRef.current)
+                const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" })
+                const url = URL.createObjectURL(svgBlob)
+                const link = document.createElement("a")
+                link.href = url
+                link.download = `gerador-qrcode-${currentId || Date.now()}.svg`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                if (!qrCanvasRef.current) return
+                const url = qrCanvasRef.current.toDataURL("image/png")
+                const link = document.createElement("a")
+                link.href = url
+                link.download = `gerador-qrcode-${currentId || Date.now()}.png`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
         }, 150)
     }
 
@@ -142,14 +152,25 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                     )}
 
                     <div className="flex gap-4">
-                        <button
-                            onClick={downloadQR}
-                            disabled={isSaving}
-                            className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                        >
-                            {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                            {qrId ? "Baixar Novamente" : "Gerar e Baixar SVG"}
-                        </button>
+                        <div className="flex-1 flex gap-2">
+                            <button
+                                onClick={() => downloadQR("png")}
+                                disabled={isSaving}
+                                className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                            >
+                                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                {qrId ? "Baixar PNG" : "Gerar e Baixar PNG"}
+                            </button>
+                            {qrId && (
+                                <button
+                                    onClick={() => downloadQR("svg")}
+                                    className="px-4 h-12 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground hover:text-white transition-all text-xs font-bold uppercase tracking-widest flex items-center justify-center"
+                                    title="Baixar em SVG (Vetor)"
+                                >
+                                    SVG
+                                </button>
+                            )}
+                        </div>
                         {!qrId && (
                             <button
                                 onClick={saveToDb}
@@ -173,6 +194,15 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                         level="H"
                         includeMargin={false}
                     />
+                    <div className="hidden">
+                        <QRCodeCanvas
+                            ref={qrCanvasRef}
+                            value={qrId ? publicUrl : content}
+                            size={1024}
+                            level="H"
+                            includeMargin={false}
+                        />
+                    </div>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl cursor-pointer">
                         <RefreshCw className="text-white w-8 h-8 animate-spin-slow" />
                     </div>
