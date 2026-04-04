@@ -27,9 +27,14 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
             })
             const data = await res.json()
             if (data.id) {
-                setQrId(data.id)
-                router.refresh()
-                // Alert success or some visual cue
+                const generatedPublicUrl = `${window.location.origin}/q/${data.id}`
+                sessionStorage.setItem("generatedQR", JSON.stringify({
+                    qrId: data.id,
+                    publicUrl: generatedPublicUrl,
+                    content,
+                    name: name || (hideStyles ? "QR Dashboard" : "QR Público"),
+                }))
+                router.push("/generated")
                 return data.id
             }
         } catch (err) {
@@ -42,33 +47,34 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
     const downloadQR = async (format: "png" | "svg" = "png") => {
         let currentId = qrId
         if (!currentId) {
-            currentId = await saveToDb()
+            // saveToDb will redirect to /generated; download will happen from that page
+            await saveToDb()
+            return
         }
 
-        // Wait a bit for the QR to update with the new URL value before capturing
-        setTimeout(() => {
-            if (format === "svg") {
-                if (!qrRef.current) return
-                const svgData = new XMLSerializer().serializeToString(qrRef.current)
-                const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" })
-                const url = URL.createObjectURL(svgBlob)
-                const link = document.createElement("a")
-                link.href = url
-                link.download = `gerador-qrcode-${currentId || Date.now()}.svg`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            } else {
-                if (!qrCanvasRef.current) return
-                const url = qrCanvasRef.current.toDataURL("image/png")
-                const link = document.createElement("a")
-                link.href = url
-                link.download = `gerador-qrcode-${currentId || Date.now()}.png`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            }
-        }, 150)
+        // If already saved, download directly
+        if (format === "svg") {
+            if (!qrRef.current) return
+            const svgData = new XMLSerializer().serializeToString(qrRef.current)
+            const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" })
+            const url = URL.createObjectURL(svgBlob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = `gerador-qrcode-${currentId}.svg`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+        } else {
+            if (!qrCanvasRef.current) return
+            const url = qrCanvasRef.current.toDataURL("image/png")
+            const link = document.createElement("a")
+            link.href = url
+            link.download = `gerador-qrcode-${currentId}.png`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        }
     }
 
     const copyToClipboard = async (text: string) => {
