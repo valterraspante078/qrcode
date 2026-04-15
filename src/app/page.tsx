@@ -247,7 +247,7 @@ export default function Home() {
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Empresa</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
               <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog de SEO</a></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">Blog de SEO</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Afiliados</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contato</a></li>
             </ul>
