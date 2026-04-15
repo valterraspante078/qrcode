@@ -134,43 +134,6 @@ export default async function BlogPost({ params }: PageProps) {
           </div>
         </div>
       </article>
-
-      {/* Global Style for content */}
-      <style jsx global>{`
-        .blog-content h2 {
-          font-size: 2rem;
-          font-weight: 800;
-          margin-top: 3rem;
-          margin-bottom: 1.5rem;
-          letter-spacing: -0.02em;
-          color: white;
-        }
-        .blog-content h3 {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin-top: 2.5rem;
-          margin-bottom: 1rem;
-          color: #3b82f6;
-        }
-        .blog-content p {
-          font-size: 1.125rem;
-          line-height: 1.8;
-          color: #94a3b8;
-          margin-bottom: 1.5rem;
-        }
-        .blog-content strong {
-          color: white;
-          font-weight: 600;
-        }
-        .blog-content ul {
-          margin-bottom: 1.5rem;
-          list-style-type: none;
-        }
-        .blog-content li {
-          margin-bottom: 1rem;
-          color: #94a3b8;
-        }
-      `}</style>
     </main>
   );
 }
