@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
+import BlogTracking from "@/components/blog/BlogTracking";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -84,19 +85,24 @@ export default async function BlogPost({ params }: PageProps) {
   `;
 
   const finalCTA = `
-    <section class="cta-final">
+    <div class="cta-final">
       <h2>Pronto para começar?</h2>
       <p>Junte-se a milhares de empresas que já usam nossa tecnologia.</p>
       <a href="/" class="cta-button" data-cta="blog-final">Criar meu QR Code Grátis</a>
-    </section>
+    </div>
   `;
 
-  // Injetar após o segundo </h2> se existir, senão ao final
-  const parts = content.split('</h2>');
+  // Divide o conteúdo em parágrafos para injetar o CTA no meio de forma segura
+  const paragraphs = content.split('</p>');
   let sanitizedContent = "";
   
-  if (parts.length >= 3) {
-    sanitizedContent = parts[0] + '</h2>' + parts[1] + '</h2>' + middleCTA + parts.slice(2).join('</h2>') + finalCTA;
+  if (paragraphs.length >= 6) {
+    const middleIndex = Math.floor(paragraphs.length / 2);
+    sanitizedContent = 
+      paragraphs.slice(0, middleIndex).join('</p>') + '</p>' + 
+      middleCTA + 
+      paragraphs.slice(middleIndex).join('</p>') + 
+      finalCTA;
   } else {
     sanitizedContent = content + finalCTA;
   }
@@ -238,27 +244,8 @@ export default async function BlogPost({ params }: PageProps) {
           className="blog-content" 
           dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
         />
-
-        {/* Tracking Script */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              document.addEventListener('click', (e) => {
-                const cta = e.target.closest('[data-cta]');
-                if (cta) {
-                  const ctaType = cta.getAttribute('data-cta');
-                  if (window.va) {
-                    window.va('event', { name: 'blog_cta_click', data: { type: ctaType } });
-                  }
-                  console.log('CTA Clicked:', ctaType);
-                }
-              });
-            `
-          }}
-        />
+        <BlogTracking />
       </section>
-
     </article>
   );
 }
-
