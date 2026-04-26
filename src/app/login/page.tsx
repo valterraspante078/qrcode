@@ -4,9 +4,10 @@ import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Zap, Sparkles, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react"
-import { useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import { useEffect, Suspense } from "react"
 
-export default function LoginPage() {
+function LoginContent() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -16,8 +17,14 @@ export default function LoginPage() {
 
     const supabase = createClient()
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     useEffect(() => {
+        const mode = searchParams.get("mode")
+        if (mode === "signup") {
+            setIsSignUp(true)
+        }
+
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession()
             if (session) {
@@ -26,7 +33,7 @@ export default function LoginPage() {
             }
         }
         checkUser()
-    }, [supabase, router])
+    }, [supabase, router, searchParams])
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -161,5 +168,17 @@ export default function LoginPage() {
                 </div>
             </div>
         </main>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     )
 }
