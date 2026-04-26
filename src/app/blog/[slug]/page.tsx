@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
+import DOMPurify from "isomorphic-dompurify";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -73,6 +74,8 @@ export default async function BlogPost({ params }: PageProps) {
   if (error || !post) {
     notFound();
   }
+
+  const sanitizedContent = DOMPurify.sanitize(post.content);
 
   // Schema.org JSON-LD
   const jsonLd = {
@@ -208,8 +211,8 @@ export default async function BlogPost({ params }: PageProps) {
       {/* Content */}
       <section className="max-w-3xl mx-auto px-6 pb-40">
         <div 
-          className="blog-content prose prose-invert prose-blue max-w-none" 
-          dangerouslySetInnerHTML={{ __html: post.content }} 
+          className="blog-content" 
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
         />
         
         {/* Author Box / CTA */}
@@ -237,3 +240,4 @@ export default async function BlogPost({ params }: PageProps) {
     </article>
   );
 }
+
