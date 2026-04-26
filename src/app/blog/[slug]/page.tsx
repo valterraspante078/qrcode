@@ -73,7 +73,33 @@ export default async function BlogPost({ params }: PageProps) {
     notFound();
   }
 
-  const sanitizedContent = post.content || "";
+  // Lógica de Injeção de CTAs (CRO)
+  const content = post.content || "";
+  const middleCTA = `
+    <div class="cta-box">
+      <h3>Crie seu QR Code em segundos</h3>
+      <p>Grátis, rápido e sem cadastro.</p>
+      <a href="/" class="cta-button" data-cta="blog-middle">Gerar QR Code Agora</a>
+    </div>
+  `;
+
+  const finalCTA = `
+    <section class="cta-final">
+      <h2>Pronto para começar?</h2>
+      <p>Junte-se a milhares de empresas que já usam nossa tecnologia.</p>
+      <a href="/" class="cta-button" data-cta="blog-final">Criar meu QR Code Grátis</a>
+    </section>
+  `;
+
+  // Injetar após o segundo </h2> se existir, senão ao final
+  const parts = content.split('</h2>');
+  let sanitizedContent = "";
+  
+  if (parts.length >= 3) {
+    sanitizedContent = parts[0] + '</h2>' + parts[1] + '</h2>' + middleCTA + parts.slice(2).join('</h2>') + finalCTA;
+  } else {
+    sanitizedContent = content + finalCTA;
+  }
 
   // Schema.org JSON-LD
   const jsonLd = {
@@ -212,29 +238,26 @@ export default async function BlogPost({ params }: PageProps) {
           className="blog-content" 
           dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
         />
-        
-        {/* Author Box / CTA */}
-        <footer className="mt-20 p-10 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-6">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xl font-bold">Gostou deste conteúdo?</h4>
-            <button 
-              className="p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors group"
-              aria-label="Compartilhar este artigo"
-            >
-              <Share2 className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
-            </button>
-          </div>
-          <p className="text-muted-foreground leading-relaxed">
-            Nossa plataforma ajuda milhares de empresas a transformarem seus QR Codes em ferramentas de marketing poderosas. Crie seu primeiro código dinâmico hoje mesmo.
-          </p>
-          <div className="pt-4">
-            <Link href="/" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all group shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
-              Criar meu QR Code Grátis
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </footer>
+
+        {/* Tracking Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('click', (e) => {
+                const cta = e.target.closest('[data-cta]');
+                if (cta) {
+                  const ctaType = cta.getAttribute('data-cta');
+                  if (window.va) {
+                    window.va('event', { name: 'blog_cta_click', data: { type: ctaType } });
+                  }
+                  console.log('CTA Clicked:', ctaType);
+                }
+              });
+            `
+          }}
+        />
       </section>
+
     </article>
   );
 }
