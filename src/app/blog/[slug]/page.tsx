@@ -75,7 +75,12 @@ export default async function BlogPost({ params }: PageProps) {
     notFound();
   }
 
-  const sanitizedContent = DOMPurify.sanitize(post.content);
+  let sanitizedContent = post.content;
+  try {
+    sanitizedContent = DOMPurify.sanitize(post.content || "");
+  } catch (e) {
+    console.error("Erro na sanitização:", e);
+  }
 
   // Schema.org JSON-LD
   const jsonLd = {
