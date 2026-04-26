@@ -1,13 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { Zap, Calendar, User, ArrowLeft, ChevronRight, Share2, Clock } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import BlogImage from "@/components/blog/BlogImage";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
-import DOMPurify from "isomorphic-dompurify";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -75,12 +73,7 @@ export default async function BlogPost({ params }: PageProps) {
     notFound();
   }
 
-  let sanitizedContent = post.content;
-  try {
-    sanitizedContent = DOMPurify.sanitize(post.content || "");
-  } catch (e) {
-    console.error("Erro na sanitização:", e);
-  }
+  const sanitizedContent = post.content || "";
 
   // Schema.org JSON-LD
   const jsonLd = {
