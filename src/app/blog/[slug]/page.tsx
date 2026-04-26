@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Zap, Calendar, User, ArrowLeft, ChevronRight, Share2, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import BlogImage from "@/components/blog/BlogImage";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -191,7 +192,7 @@ export default async function BlogPost({ params }: PageProps) {
       {post.image_url && (
         <section className="max-w-6xl mx-auto px-6 mb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="aspect-[21/9] rounded-[40px] overflow-hidden border border-white/5 relative shadow-2xl shadow-blue-500/5">
-            <Image 
+            <BlogImage 
               src={post.image_url} 
               alt={`Imagem de destaque: ${post.title}`}
               fill

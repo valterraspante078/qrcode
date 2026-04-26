@@ -4,7 +4,8 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
-import Image from "next/image";
+import BlogImage from "@/components/blog/BlogImage";
+import Image from "next/image"; // Mantendo se necessário por outros motivos, mas usaremos BlogImage
 
 export const metadata: Metadata = {
   title: "Blog de SEO, QR Codes e Estratégia Digital",
@@ -98,8 +99,8 @@ export default async function BlogPage() {
               >
                 <article className="h-full flex flex-col">
                   <div className="relative h-48 overflow-hidden bg-white/5">
-                    <Image 
-                      src={post.image_url || "/placeholder-blog.jpg"} 
+                    <BlogImage 
+                      src={post.image_url} 
                       alt={`Capa do artigo: ${post.title}`}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
