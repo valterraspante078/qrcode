@@ -3,22 +3,54 @@ import { Zap, ChevronRight, Calendar, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Metadata } from "next";
+import Image from "next/image";
 
-export const metadata = {
-  title: "Blog de SEO e Estratégia | Gerador de Qr Code",
-  description: "Dicas, tendências e guias completos sobre QR Codes, marketing digital e inteligência de negócios.",
+export const metadata: Metadata = {
+  title: "Blog de SEO, QR Codes e Estratégia Digital",
+  description: "Dicas especializadas, tendências e guias completos sobre QR Codes, marketing digital e inteligência de negócios para impulsionar seu ranqueamento.",
+  keywords: ["SEO", "QR Code", "Marketing Digital", "Estratégia Digital", "Tecnologia"],
+  openGraph: {
+    title: "Blog de SEO e Estratégia | Gerador de Qr Code",
+    description: "Dicas e tendências sobre QR Codes e marketing digital.",
+    images: ["/blog-og.png"],
+  },
 };
+
+interface Post {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  image_url: string | null;
+  created_at: string;
+}
 
 export default async function BlogPage() {
   const supabase = await createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
   
   const { data: posts, error } = await supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false });
 
+  // JSON-LD for CollectionPage
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Blog de SEO e Estratégia | Gerador de Qr Code",
+    "description": "Insights sobre tecnologia e marketing digital.",
+    "url": `${siteUrl}/blog`,
+  };
+
   return (
     <main className="min-h-screen bg-black text-white relative flex flex-col items-center">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       {/* Background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-blue-500/5 blur-[120px] rounded-full -z-10" />
 
@@ -58,45 +90,49 @@ export default async function BlogPage() {
               <p className="text-sm text-muted-foreground/50">Certifique-se de executar os scripts SQL no Supabase.</p>
             </div>
           ) : (
-            posts.map((post) => (
+            (posts as Post[]).map((post) => (
               <Link 
                 key={post.id} 
                 href={`/blog/${post.slug}`}
                 className="group flex flex-col bg-card border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all hover:translate-y--1"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={post.image_url || "/placeholder-blog.jpg"} 
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
-                
-                <div className="p-8 space-y-4 flex-grow flex flex-col">
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {format(new Date(post.created_at), "dd MMM, yyyy", { locale: ptBR })}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      Redação
-                    </span>
+                <article className="h-full flex flex-col">
+                  <div className="relative h-48 overflow-hidden bg-white/5">
+                    <Image 
+                      src={post.image_url || "/placeholder-blog.jpg"} 
+                      alt={`Capa do artigo: ${post.title}`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   </div>
                   
-                  <h3 className="text-xl font-bold leading-tight group-hover:text-blue-400 transition-colors">
-                    {post.title}
-                  </h3>
-                  
-                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                    {post.description}
-                  </p>
-                  
-                  <div className="pt-4 mt-auto flex items-center text-sm font-semibold text-blue-400 group-hover:gap-2 transition-all">
-                    Ler artigo <ChevronRight className="w-4 h-4" />
+                  <div className="p-8 space-y-4 flex-grow flex flex-col">
+                    <header className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {format(new Date(post.created_at), "dd MMM, yyyy", { locale: ptBR })}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5" />
+                        Redação
+                      </span>
+                    </header>
+                    
+                    <h2 className="text-xl font-bold leading-tight group-hover:text-blue-400 transition-colors">
+                      {post.title}
+                    </h2>
+                    
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                      {post.description}
+                    </p>
+                    
+                    <footer className="pt-4 mt-auto flex items-center text-sm font-semibold text-blue-400 group-hover:gap-2 transition-all">
+                      Ler artigo <ChevronRight className="w-4 h-4 ml-1" />
+                    </footer>
                   </div>
-                </div>
+                </article>
               </Link>
             ))
           )}
@@ -107,11 +143,11 @@ export default async function BlogPage() {
       <footer className="w-full border-t border-white/5 py-12 px-6 bg-card/30">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-muted-foreground text-sm">© 2026 Gerador de Qr Code. Todos os direitos reservados.</p>
-          <div className="flex gap-8 text-sm text-muted-foreground">
+          <nav className="flex gap-8 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <Link href="/#pricing" className="hover:text-white transition-colors">Preços</Link>
             <Link href="/#faq" className="hover:text-white transition-colors">FAQ</Link>
-          </div>
+          </nav>
         </div>
       </footer>
     </main>
