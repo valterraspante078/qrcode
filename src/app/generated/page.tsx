@@ -154,6 +154,9 @@ export default function GeneratedPage() {
               <input
                 readOnly
                 value={qrData.publicUrl}
+                title="Link Permanente"
+                placeholder="Link Permanente"
+                aria-label="Link Permanente gerado do QR Code"
                 className="flex-1 h-11 px-4 rounded-xl bg-blue-500/5 border border-blue-500/20 text-sm text-blue-300 outline-none font-mono"
               />
               <button

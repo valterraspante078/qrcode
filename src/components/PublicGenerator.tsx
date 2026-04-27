@@ -145,6 +145,9 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                                 <input
                                     readOnly
                                     value={publicUrl}
+                                    title="Link Permanente"
+                                    placeholder="Link Permanente"
+                                    aria-label="Link Permanente gerado do QR Code"
                                     className="flex-1 h-10 px-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-xs text-blue-300 outline-none"
                                 />
                                 <button
