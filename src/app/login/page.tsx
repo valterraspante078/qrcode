@@ -12,17 +12,19 @@ function LoginContent() {
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [isSignUp, setIsSignUp] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
 
     const supabase = createClient()
     const router = useRouter()
-    const searchParams = useSearchParams()
+    const searchParams = useSearchParams();
+    const [isSignUp, setIsSignUp] = useState(() => searchParams.get("mode") === "signup");
 
     useEffect(() => {
-        const mode = searchParams.get("mode")
+        const mode = searchParams.get("mode");
         if (mode === "signup") {
-            setIsSignUp(true)
+            setIsSignUp(true);
+        } else if (mode === "login") {
+            setIsSignUp(false);
         }
 
         const checkUser = async () => {
@@ -34,6 +36,15 @@ function LoginContent() {
         }
         checkUser()
     }, [supabase, router, searchParams])
+
+    // Função para tratar botões legados que podem estar no conteúdo do banco sem link
+    const fixLegacyButtons = (html: string) => {
+        // Procura por qualquer tag que contenha textos comuns de CTA e transforma em links funcionais
+        return html.replace(
+            /(<[a-z0-9]+[^>]*>)([\s\n]*)(Criar QR Code|Gerar QR Code|Começar agora|Gerar agora|Criar meu QR Code Grátis|Gerar QR Code Agora)([\s\n]*)(<\/[a-z0-9]+>)/gi,
+            `<a href="/login?mode=signup" class="cta-button" data-cta="legacy-fix">$3</a>`
+        );
+    };
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -71,6 +82,14 @@ function LoginContent() {
                 setError(translatedError)
             } else if (data.user || data.session) {
                 console.log("Sucesso! Redirecionando...")
+                
+                // Track successful sign_up conversion in Google Ads
+                if (isSignUp && typeof window !== "undefined" && typeof window.gtag === "function") {
+                    window.gtag("event", "conversion", {
+                        "send_to": "AW-18124091400/sign_up"
+                    })
+                }
+
                 router.push("/dashboard")
                 router.refresh()
             }

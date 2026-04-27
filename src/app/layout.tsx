@@ -3,6 +3,14 @@ import { Inter, Lexend } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
+  }
+}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -92,6 +100,20 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${lexend.variable}`}>
       <body className="antialiased min-h-screen">
+        {/* Google tag (gtag.js) */}
+        <Script 
+          strategy="afterInteractive" 
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18124091400" 
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18124091400');
+          `}
+        </Script>
+        
         {children}
         <Analytics />
         <SpeedInsights />

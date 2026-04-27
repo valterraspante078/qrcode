@@ -27,6 +27,13 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
             })
             const data = await res.json()
             if (data.id) {
+                // Tracking Google Ads conversion for QR Generation
+                if (typeof window !== "undefined" && typeof window.gtag === "function") {
+                    window.gtag("event", "conversion", {
+                        "send_to": "AW-18124091400/generate_qr"
+                    })
+                }
+
                 const generatedPublicUrl = `${window.location.origin}/q/${data.id}`
                 sessionStorage.setItem("generatedQR", JSON.stringify({
                     qrId: data.id,

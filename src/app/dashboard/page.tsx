@@ -7,6 +7,7 @@ import { isAfter, parseISO } from "date-fns"
 
 import { QRNameEditor } from "@/components/dashboard/QRNameEditor"
 import { QRRowActions } from "@/components/dashboard/QRRowActions"
+import { PaymentTracker } from "@/components/PaymentTracker"
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -52,6 +53,8 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-10">
+            <PaymentTracker />
+            
             {/* Welcome Card */}
             <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-blue-600 to-blue-800 border border-blue-400 overflow-hidden shadow-2xl">
                 <div className="relative z-10 space-y-4">

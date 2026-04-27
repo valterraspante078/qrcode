@@ -80,7 +80,7 @@ export default async function BlogPost({ params }: PageProps) {
     <div class="cta-box">
       <h3>Crie seu QR Code em segundos</h3>
       <p>Grátis, rápido e sem cadastro.</p>
-      <a href="/" class="cta-button" data-cta="blog-middle">Gerar QR Code Agora</a>
+      <a href="/login?mode=signup" class="cta-button" data-cta="blog-middle">Gerar QR Code Agora</a>
     </div>
   `;
 
@@ -88,12 +88,23 @@ export default async function BlogPost({ params }: PageProps) {
     <div class="cta-final">
       <h2>Pronto para começar?</h2>
       <p>Junte-se a milhares de empresas que já usam nossa tecnologia.</p>
-      <a href="/" class="cta-button" data-cta="blog-final">Criar meu QR Code Grátis</a>
+      <a href="/login?mode=signup" class="cta-button" data-cta="blog-final">Criar meu QR Code Grátis</a>
     </div>
   `;
 
+  // Função para tratar botões legados que podem estar no conteúdo do banco sem link
+  const fixLegacyButtons = (html: string) => {
+    // Procura por qualquer tag de botão, link ou span que contenha termos de CTA e força o redirecionamento
+    return html.replace(
+      /(<[a-z0-9]+[^>]*>)([\s\S]*?)(Criar QR Code|Gerar QR Code|Começar agora|Gerar agora|Criar meu QR Code Grátis|Gerar QR Code Agora)([\s\S]*?)(<\/[a-z0-9]+>)/gi,
+      `<a href="/login?mode=signup" class="cta-button" data-cta="legacy-fix">$2$3$4</a>`
+    );
+  };
+
+  const processedContent = fixLegacyButtons(content);
+
   // Divide o conteúdo em parágrafos para injetar o CTA no meio de forma segura
-  const paragraphs = content.split('</p>');
+  const paragraphs = processedContent.split('</p>');
   let sanitizedContent = "";
   
   if (paragraphs.length >= 6) {
@@ -104,7 +115,7 @@ export default async function BlogPost({ params }: PageProps) {
       paragraphs.slice(middleIndex).join('</p>') + 
       finalCTA;
   } else {
-    sanitizedContent = content + finalCTA;
+    sanitizedContent = processedContent + finalCTA;
   }
 
   // Schema.org JSON-LD
@@ -185,7 +196,7 @@ export default async function BlogPost({ params }: PageProps) {
             <span className="font-bold tracking-tight hidden sm:inline-block">Gerador de Qr Code</span>
           </Link>
           <div className="hidden sm:block">
-            <Link href="/" className="px-5 py-2 rounded-full bg-white text-black text-xs font-bold hover:bg-gray-200 transition-colors shadow-xl">
+            <Link href="/login?mode=signup" className="px-5 py-2 rounded-full bg-white text-black text-xs font-bold hover:bg-gray-200 transition-colors shadow-xl">
               Começar Grátis
             </Link>
           </div>
