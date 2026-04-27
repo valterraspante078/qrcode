@@ -1,13 +1,18 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { isAfter, parseISO } from "date-fns";
 
 export default async function QRRedirectPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const supabase = await createClient();
+    
+    // Use Service Role to bypass RLS for public redirect engine
+    const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
-    const { data: qr, error } = await supabase
+    const { data: qr, error } = await supabaseAdmin
         .from("qr_codes")
         .select("*")
         .eq("id", id)
@@ -34,7 +39,7 @@ export default async function QRRedirectPage({ params }: { params: Promise<{ id:
     const referer = headersList.get("referer") || "direct";
     const ip = headersList.get("x-forwarded-for")?.split(',')[0] || "unknown";
 
-    await supabase.from("scans").insert({
+    await supabaseAdmin.from("scans").insert({
         qr_id: id,
         user_agent: userAgent,
         referer: referer,
