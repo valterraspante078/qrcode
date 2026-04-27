@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
-import { Download, Copy, Check, ArrowLeft, Sparkles, Zap } from "lucide-react"
+import { Download, Copy, Check, ArrowLeft, Sparkles, Zap, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 interface QRData {
@@ -206,10 +206,25 @@ export default function GeneratedPage() {
           </button>
         </div>
 
-        {/* Subtle footer */}
-        <p className="text-center text-xs text-muted-foreground/40 mt-8">
-          Seu QR Code está salvo e sincronizado com o Dashboard.
-        </p>
+        {/* Upsell CTA for Account Creation */}
+        <div className="mt-6 p-6 md:p-8 rounded-3xl bg-blue-600/10 border border-blue-500/30 text-center space-y-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-white tracking-tight flex items-center justify-center gap-2">
+              <Zap className="w-5 h-5 text-yellow-400" />
+              Não deixe seu QR Code expirar!
+            </h3>
+            <p className="text-sm text-blue-100/70 max-w-sm mx-auto">
+              Seu QR Code público expira em 14 dias. Crie uma conta agora para acompanhar estatísticas de acesso e ter a opção de mantê-lo ativo permanentemente.
+            </p>
+          </div>
+          <Link
+            href="/login?mode=signup"
+            className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group"
+          >
+            Criar Conta e Acompanhar QR
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
       </div>
     </main>
   )
