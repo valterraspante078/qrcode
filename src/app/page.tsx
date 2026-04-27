@@ -121,7 +121,7 @@ const faqJsonLd = {
 
 export default function Home() {
   return (
-    <main className="relative flex flex-col items-center">
+    <main className="relative flex flex-col items-center overflow-hidden">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

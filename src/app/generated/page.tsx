@@ -91,7 +91,7 @@ export default function GeneratedPage() {
   }
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16">
+    <main className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16 overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/8 blur-[150px] rounded-full -z-10" />
 
