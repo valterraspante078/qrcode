@@ -46,8 +46,8 @@ export default async function DashboardPage() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
 
-    const totalScans = qrs?.reduce((acc: number, qr: any) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
-    const activeQrs = qrs?.filter((qr: any) => {
+    const totalScans = qrs?.reduce((acc: number, qr: { scans?: { count: number }[] }) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
+    const activeQrs = qrs?.filter((qr: { expires_at?: string }) => {
         return !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
     }).length || 0
 
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {qrs && qrs.length > 0 ? qrs.map((qr: any) => {
+                            {qrs && qrs.length > 0 ? qrs.map((qr: { id: string; name: string; content: string; expires_at?: string; scans?: { count: number }[] }) => {
                                 const active = !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
                                 const scans = qr.scans?.[0]?.count || 0
                                 return (
@@ -157,7 +157,15 @@ export default async function DashboardPage() {
     )
 }
 
-function StatCard({ title, value, icon, change, color }: any) {
+interface StatCardProps {
+    title: string
+    value: string | number
+    icon: React.ReactNode
+    change?: string
+    color?: string
+}
+
+function StatCard({ title, value, icon, change, color }: StatCardProps) {
     return (
         <div className="p-6 rounded-3xl bg-card/50 backdrop-blur-xl border border-white/5 flex items-center justify-between group hover:border-blue-500/30 transition-all shadow-xl">
             <div className="space-y-1">

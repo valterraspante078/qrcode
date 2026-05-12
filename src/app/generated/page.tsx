@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
-import { Download, Copy, Check, ArrowLeft, Sparkles, Zap, ArrowRight } from "lucide-react"
+import { Download, Copy, Check, Sparkles, Zap, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 interface QRData {

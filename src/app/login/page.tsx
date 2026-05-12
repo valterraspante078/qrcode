@@ -37,14 +37,7 @@ function LoginContent() {
         checkUser()
     }, [supabase, router, searchParams])
 
-    // Função para tratar botões legados que podem estar no conteúdo do banco sem link
-    const fixLegacyButtons = (html: string) => {
-        // Procura por qualquer tag que contenha textos comuns de CTA e transforma em links funcionais
-        return html.replace(
-            /(<[a-z0-9]+[^>]*>)([\s\n]*)(Criar QR Code|Gerar QR Code|Começar agora|Gerar agora|Criar meu QR Code Grátis|Gerar QR Code Agora)([\s\n]*)(<\/[a-z0-9]+>)/gi,
-            `<a href="/login?mode=signup" class="cta-button" data-cta="legacy-fix">$3</a>`
-        );
-    };
+
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -93,9 +86,9 @@ function LoginContent() {
                 router.push("/dashboard")
                 router.refresh()
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Erro inesperado na autenticação:", err)
-            setError(`Erro inesperado: ${err.message || "Tente novamente mais tarde."}`)
+            setError(`Erro inesperado: ${err instanceof Error ? err.message : "Tente novamente mais tarde."}`)
         } finally {
             setLoading(false)
         }

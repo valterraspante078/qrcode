@@ -1,45 +1,76 @@
-import { stripe } from "@/lib/stripe";
+import { mpClient } from "@/lib/mercadopago";
+import { PreApproval } from "mercadopago";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+// Configuração dos planos
+const PLANS: Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }> = {
+    mensal: {
+        reason: "QR Code da Fortuna — Plano Mensal",
+        frequency: 1,
+        frequencyType: "months",
+        amount: 50,
+    },
+    trimestral: {
+        reason: "QR Code da Fortuna — Plano Trimestral",
+        frequency: 3,
+        frequencyType: "months",
+        amount: 75,
+    },
+    anual: {
+        reason: "QR Code da Fortuna — Plano Anual",
+        frequency: 12,
+        frequencyType: "months",
+        amount: 150,
+    },
+};
+
 export async function POST(req: Request) {
-    const { priceId } = await req.json();
+    const { planType } = await req.json();
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    if (!stripe) {
-        return NextResponse.json({ error: "Stripe is not configured" }, { status: 500 });
+    if (!mpClient) {
+        return NextResponse.json({ error: "Mercado Pago não configurado" }, { status: 500 });
+    }
+
+    const plan = PLANS[planType];
+    if (!plan) {
+        return NextResponse.json({ error: "Tipo de plano inválido" }, { status: 400 });
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
     if (!siteUrl || !siteUrl.startsWith("http")) {
-        return NextResponse.json({ error: "Configuração NEXT_PUBLIC_SITE_URL inválida ou ausente no servidor." }, { status: 500 });
+        return NextResponse.json({ error: "NEXT_PUBLIC_SITE_URL inválida ou ausente." }, { status: 500 });
     }
 
     try {
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: [
-                {
-                    price: priceId,
-                    quantity: 1,
+        const preapproval = new PreApproval(mpClient);
+
+        const result = await preapproval.create({
+            body: {
+                reason: plan.reason,
+                auto_recurring: {
+                    frequency: plan.frequency,
+                    frequency_type: plan.frequencyType,
+                    transaction_amount: plan.amount,
+                    currency_id: "BRL",
                 },
-            ],
-            mode: "subscription",
-            success_url: `${siteUrl}/dashboard?success=true`,
-            cancel_url: `${siteUrl}/dashboard?canceled=true`,
-            client_reference_id: user.id,
-            customer_email: user.email,
+                back_url: `${siteUrl}/dashboard?success=true`,
+                payer_email: user.email || "",
+                external_reference: user.id,
+            },
         });
 
-        return NextResponse.json({ url: session.url });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ url: result.init_point });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Erro desconhecido";
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

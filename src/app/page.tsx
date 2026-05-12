@@ -1,8 +1,7 @@
 import { PublicGenerator } from "@/components/PublicGenerator";
-import { Sparkles, Shield, Zap, TrendingUp, ChevronRight, ChevronDown, HelpCircle, Check } from "lucide-react";
+import { Shield, Zap, TrendingUp, ChevronDown, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { cn } from "@/lib/utils";
 
 const PricingSection = dynamic(() => import("@/components/PricingSection").then(mod => mod.PricingSection), {
   loading: () => <div className="h-96 w-full animate-pulse bg-white/5 rounded-3xl" />

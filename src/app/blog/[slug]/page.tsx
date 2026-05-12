@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Zap, Calendar, User, ArrowLeft, ChevronRight, Share2, Clock } from "lucide-react";
+import { Zap, Calendar, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import BlogImage from "@/components/blog/BlogImage";
 import { notFound } from "next/navigation";
