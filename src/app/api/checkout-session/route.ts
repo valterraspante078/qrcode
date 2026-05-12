@@ -69,8 +69,15 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({ url: result.init_point });
-    } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Erro desconhecido";
-        return NextResponse.json({ error: message }, { status: 500 });
+    } catch (err: any) {
+        console.error("Erro MP:", err);
+        const errorMessage =
+            err?.message ||
+            err?.response?.data?.message ||
+            err?.cause?.[0]?.description ||
+            (typeof err === 'string' ? err : JSON.stringify(err)) ||
+            "Erro ao processar assinatura";
+            
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
