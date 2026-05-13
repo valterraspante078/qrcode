@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Users, DollarSign, WalletCards, Copy, CheckCircle2 } from "lucide-react"
+import { Users, DollarSign, WalletCards, CheckCircle2 } from "lucide-react"
+import { CopyLinkButton } from "./CopyLinkButton"
 
 export default async function AffiliatesDashboard() {
     const supabase = await createClient()
@@ -23,8 +24,8 @@ export default async function AffiliatesDashboard() {
         .eq("affiliate_id", user.id)
 
     // Cálculos
-    const totalGanhos = commissions?.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0) || 0
-    const saldoPendente = commissions?.filter((c: any) => c.status === "pending").reduce((acc: number, curr: any) => acc + Number(curr.amount), 0) || 0
+    const totalGanhos = commissions?.reduce((acc: number, curr: { amount: string | number }) => acc + Number(curr.amount), 0) || 0
+    const saldoPendente = commissions?.filter((c: { status: string; amount: string | number }) => c.status === "pending").reduce((acc: number, curr: { amount: string | number }) => acc + Number(curr.amount), 0) || 0
 
     // O link exclusivo
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br"
@@ -108,27 +109,5 @@ export default async function AffiliatesDashboard() {
             </div>
 
         </div>
-    )
-}
-
-// Client Component para Função de Cópia
-"use client"
-import { useState } from "react"
-function CopyLinkButton({ link }: { link: string }) {
-    const [copied, setCopied] = useState(false)
-    
-    return (
-        <button 
-            type="button"
-            onClick={async () => {
-                await navigator.clipboard.writeText(link);
-                setCopied(true);
-                setTimeout(() => { setCopied(false) }, 2000);
-            }}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shrink-0"
-        >
-            <Copy className="w-4 h-4" />
-            {copied ? "Copiado!" : "Copiar"}
-        </button>
     )
 }
