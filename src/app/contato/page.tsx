@@ -65,7 +65,7 @@ export default function ContatoPage() {
                     {/* Formulário Falso Estilizado */}
                     <div className="bg-[#0f0f13] border border-white/5 p-8 rounded-[2.5rem] shadow-2xl">
                         <h3 className="text-2xl font-bold text-white mb-6">Mande um recado rápido</h3>
-                        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Formulário meramente ilustrativo durante implementações! Utilize os contatos diretos ao lado."); }}>
+                        <form className="space-y-4" action="#">
                             <div>
                                 <label className="block text-sm font-medium text-muted-foreground mb-1.5">Seu Nome</label>
                                 <input type="text" placeholder="Ex: João da Silva" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
