@@ -49,6 +49,28 @@ export async function POST(req: Request) {
                     .update({ is_active: true })
                     .eq("user_id", userId);
 
+                // --- SISTEMA DE AFILIADOS / COMISSÃO ---
+                const { data: profile } = await supabaseAdmin
+                    .from("profiles")
+                    .select("referred_by")
+                    .eq("id", userId)
+                    .single();
+
+                if (profile?.referred_by && subscription.auto_recurring?.transaction_amount) {
+                    // 40% de comissão
+                    const commissionAmount = subscription.auto_recurring.transaction_amount * 0.40;
+
+                    // Registra comissão
+                    await supabaseAdmin
+                        .from("commissions")
+                        .insert({
+                            affiliate_id: profile.referred_by,
+                            buyer_id: userId,
+                            amount: commissionAmount,
+                            status: "pending"
+                        });
+                }
+
             } else if (status === "cancelled" || status === "paused") {
                 // Assinatura cancelada ou pausada — downgrade para FREE
                 await supabaseAdmin

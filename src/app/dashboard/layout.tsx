@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
-import { LogOut, LayoutDashboard, Database, CreditCard, Plus, BarChart3, Settings, Menu, X } from "lucide-react"
+import { LogOut, LayoutDashboard, Database, CreditCard, Plus, BarChart3, Settings, Menu, X, Users } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Modal } from "@/components/ui/Modal"
@@ -108,6 +108,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             icon={<Settings className="w-4 h-4" />}
                             label="Configurações"
                             active={pathname === "/dashboard/settings"}
+                        />
+                    </Link>
+                    <Link href="/dashboard/affiliates" onClick={closeMobileMenu}>
+                        <NavItem
+                            icon={<Users className="w-4 h-4" />}
+                            label="Painel de Afiliados"
+                            active={pathname === "/dashboard/affiliates"}
                         />
                     </Link>
                 </nav>

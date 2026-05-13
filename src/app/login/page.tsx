@@ -74,7 +74,23 @@ function LoginContent() {
                 }
                 setError(translatedError)
             } else if (data.user || data.session) {
-                console.log("Sucesso! Redirecionando...")
+                console.log("Sucesso! Processando Tracking e Redirecionando...")
+                
+                // Process Affiliate Referral if exists
+                if (isSignUp && data.user) {
+                    try {
+                        const refMatch = document.cookie.match(/(?:^|; )qrc_affiliate_ref=([^;]*)/);
+                        if (refMatch && refMatch[1]) {
+                            const affiliateId = refMatch[1];
+                            await supabase
+                                .from("profiles")
+                                .update({ referred_by: affiliateId })
+                                .eq("id", data.user.id);
+                        }
+                    } catch (e) {
+                         console.error("Erro ao rastrear filial", e);
+                    }
+                }
                 
                 // Track successful sign_up conversion in Google Ads
                 if (isSignUp && typeof window !== "undefined" && typeof window.gtag === "function") {

@@ -4,6 +4,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Script from "next/script";
+import { Suspense } from "react";
+import { AffiliateTracker } from "@/components/AffiliateTracker";
 
 declare global {
   interface Window {
@@ -114,6 +116,9 @@ export default function RootLayout({
           `}
         </Script>
         
+        <Suspense fallback={null}>
+          <AffiliateTracker />
+        </Suspense>
         {children}
         <Analytics />
         <SpeedInsights />
