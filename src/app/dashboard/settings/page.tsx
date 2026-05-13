@@ -63,6 +63,7 @@ export default function SettingsPage() {
                 .upsert({
                     id: user.id,
                     display_name: profile.display_name,
+                    pix_key: profile.pix_key,
                     updated_at: new Date().toISOString()
                 })
 
@@ -142,6 +143,16 @@ export default function SettingsPage() {
                                 onChange={(e) => setProfile({ ...profile, display_name: e.target.value })}
                                 className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-sm"
                                 placeholder="Seu nome no império"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Chave PIX (Para Afiliados)</label>
+                            <input
+                                type="text"
+                                value={profile.pix_key || ""}
+                                onChange={(e) => setProfile({ ...profile, pix_key: e.target.value })}
+                                className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-green-500/50 outline-none transition-all text-sm"
+                                placeholder="CPF, Celular, E-mail ou Chave Aleatória"
                             />
                         </div>
                     </div>

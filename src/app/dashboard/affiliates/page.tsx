@@ -103,7 +103,7 @@ export default async function AffiliatesDashboard() {
                 <div>
                     <h4 className="text-white font-bold mb-1">Saques Simplificados e Automáticos</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed max-w-3xl">
-                        A burocracia ficou no passado! Agora o sistema faz a varredura automática do seu <strong>Saldo Disponível</strong>. Sempre que atingir o mínimo de R$ 50,00, faremos a transferência PIX diretamente na chave cadastrada no seu perfil todo <strong>dia 05</strong> de cada mês, sem a necessidade de solicitar nada manualmente. 💸
+                        A burocracia ficou no passado! Agora o sistema faz a varredura automática do seu <strong>Saldo Disponível</strong>. Sempre que atingir o mínimo de R$ 50,00, faremos a transferência PIX diretamente na chave cadastrada na aba de <strong>Configurações</strong> do seu perfil, todo <strong>dia 05</strong> de cada mês, sem a necessidade de solicitar nada manualmente. 💸
                     </p>
                 </div>
             </div>
