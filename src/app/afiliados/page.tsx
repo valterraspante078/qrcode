@@ -49,16 +49,16 @@ export default function AfiliadosPage() {
 
                 <div className="bg-blue-600/10 border border-blue-500/20 p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8">
                     <div>
-                        <h2 className="text-2xl font-bold text-white mb-3">Quer ser Parceiro Oficial?</h2>
+                        <h2 className="text-2xl font-bold text-white mb-3">Tudo Pronto no Seu Painel!</h2>
                         <p className="text-muted-foreground text-sm max-w-lg">
-                            Estamos configurando o painel de parceiros automático nas próximas integrações, onde você capturará a URL exclusiva direto no seu painel logado com métricas. Por ora, inicie contatando nossa gerência para ingressar no programa restrito e obter seu ID de afiliação.
+                            O sistema de parceiros já está 100% automatizado! Não precisa entrar em contato ou aguardar aprovação. Basta criar sua conta (ou fazer login) e acessar a seção &quot;Painel de Afiliados&quot; no menu para pegar o seu Link Exclusivo e começar a lucrar!
                         </p>
                     </div>
                     <Link 
-                        href="/contato" 
+                        href="/login?mode=signup" 
                         className="w-full md:w-auto shrink-0 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-2xl font-bold transition-colors inline-flex justify-center items-center gap-2"
                     >
-                        Entrar em Contato
+                        Criar Conta e Afiliar-se
                         <ExternalLink className="w-4 h-4" />
                     </Link>
                 </div>

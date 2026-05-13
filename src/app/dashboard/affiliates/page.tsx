@@ -96,14 +96,14 @@ export default async function AffiliatesDashboard() {
             </div>
 
             {/* Aviso de Saque */}
-            <div className="bg-orange-500/10 border border-orange-500/20 p-6 rounded-3xl flex items-start gap-4">
+            <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-3xl flex items-start gap-4">
                 <div className="mt-1">
-                    <CheckCircle2 className="w-6 h-6 text-orange-400" />
+                    <CheckCircle2 className="w-6 h-6 text-green-400" />
                 </div>
                 <div>
-                    <h4 className="text-white font-bold mb-1">Como resgatar meu Saldo?</h4>
+                    <h4 className="text-white font-bold mb-1">Saques Simplificados e Automáticos</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed max-w-3xl">
-                        Atualmente, o repasse de pagamentos (PIX) é processado no dia 05 de cada mês pelo setor financeiro da plataforma para todos os afiliados com saldo superior a R$ 50,00. Caso o seu <strong>Saldo Disponível</strong> atinja os requisitos, envie um e-mail para <span className="text-blue-400">contato@geradordeqrcode.com.br</span> informando o e-mail de registro da sua conta aqui na plataforma e sua Chave de Recebimento PIX para liberação dos repasses.
+                        A burocracia ficou no passado! Agora o sistema faz a varredura automática do seu <strong>Saldo Disponível</strong>. Sempre que atingir o mínimo de R$ 50,00, faremos a transferência PIX diretamente na chave cadastrada no seu perfil todo <strong>dia 05</strong> de cada mês, sem a necessidade de solicitar nada manualmente. 💸
                     </p>
                 </div>
             </div>
