@@ -1,11 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { POSTS, BlogPost as Post } from "@/lib/blog-data";
 import { Zap, ChevronRight, Calendar, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
 import BlogImage from "@/components/blog/BlogImage";
-import Image from "next/image"; // Mantendo se necessário por outros motivos, mas usaremos BlogImage
 
 export const metadata: Metadata = {
   title: "Blog de SEO, QR Codes e Estratégia Digital",
@@ -18,23 +17,11 @@ export const metadata: Metadata = {
   },
 };
 
-interface Post {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  image_url: string | null;
-  created_at: string;
-}
 
 export default async function BlogPage() {
-  const supabase = await createClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
-  
-  const { data: posts, error } = await supabase
-    .from("posts")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const posts = [...POSTS].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const error = null;
 
   // JSON-LD for CollectionPage
   const jsonLd = {

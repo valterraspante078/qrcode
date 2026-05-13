@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { POSTS } from "@/lib/blog-data";
 import { Zap, Calendar, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import BlogImage from "@/components/blog/BlogImage";
@@ -14,14 +14,8 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await createClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
-
-  const { data: post } = await supabase
-    .from("posts")
-    .select("title, description, image_url, created_at, updated_at")
-    .eq("slug", slug)
-    .single();
+  const post = POSTS.find(p => p.slug === slug);
 
   if (!post) return {};
 
@@ -62,13 +56,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.geradordeqrcode.com.br";
-  const supabase = await createClient();
-  
-  const { data: post, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+  const post = POSTS.find(p => p.slug === slug);
+  const error = !post;
 
   if (error || !post) {
     notFound();

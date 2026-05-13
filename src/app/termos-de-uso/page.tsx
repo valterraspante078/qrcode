@@ -65,6 +65,19 @@ export default function TermosPage() {
                         Respeitamos o dinamismo da internet. Portanto, podemos alterar estes acordos a qualquer momento devido a novidades regulatórias da LGPD ou mudanças operacionais com o gateway Mercado Pago.
                     </p>
 
+                    <h2 className="text-2xl font-bold text-white mt-10 mb-4">7. Programa de Afiliados</h2>
+                    <ul className="list-disc pl-6 space-y-2">
+                        <li>
+                            <strong>Comissionamento:</strong> Afiliados recebem uma comissão de 40% sobre o valor da primeira venda ou renovação de assinaturas aprovadas provenientes de seus links registrados.
+                        </li>
+                        <li>
+                            <strong>Saques e Pagamentos:</strong> Os valores acumulados podem ser sacados mediante solicitação no painel financeiro. Os repasses são processados com chave Pix (CPF, E-Mail ou Celular) na conta da mesma titularidade do afiliado.
+                        </li>
+                        <li>
+                            <strong>Estornos e Chargebacks:</strong> Caso uma venda seja contestada ou estornada (chargeback) no gateway Mercado Pago em até 90 dias após a transação, a respectiva comissão será debitada do saldo futuro do afiliado.
+                        </li>
+                    </ul>
+
                     <p className="mt-10 pt-10 border-t border-white/10 text-sm">
                         Qualquer questionamento referente ao uso contratual pode ser sanado pelo e-mail: contato@geradordeqrcode.com.br
                     </p>
