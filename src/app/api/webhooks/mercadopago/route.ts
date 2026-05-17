@@ -17,7 +17,6 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        console.log("Mercado Pago Webhook Received:", JSON.stringify(body, null, 2));
 
         // Mercado Pago envia notificações com type e data.id ou action/data.id
         const type = body.type || body.action;

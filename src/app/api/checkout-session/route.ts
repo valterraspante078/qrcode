@@ -1,24 +1,26 @@
 import { mpClient } from "@/lib/mercadopago";
-import { PreApproval, Preference } from "mercadopago";
+import { PreApproval } from "mercadopago";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// Configuração dos planos
-const PLANS: Record<string, { reason: string; frequency?: number; frequencyType?: "months"; amount: number }> = {
+// Configuração dos planos oficiais
+const PLANS: Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }> = {
     mensal: {
-        reason: "Plano Mensal - QR Code da Fortuna",
-        amount: 5,
+        reason: "QR Code da Fortuna — Plano Mensal",
+        frequency: 1,
+        frequencyType: "months",
+        amount: 50,
     },
     trimestral: {
-        reason: "Plano Trimestral - QR Code da Fortuna",
+        reason: "QR Code da Fortuna — Plano Trimestral",
         frequency: 3,
         frequencyType: "months",
         amount: 75,
     },
     anual: {
-        reason: "Plano Anual - QR Code da Fortuna",
+        reason: "QR Code da Fortuna — Plano Anual",
         frequency: 12,
         frequencyType: "months",
         amount: 150,
@@ -49,46 +51,13 @@ export async function POST(req: Request) {
     }
 
     try {
-        // Se for o plano mensal (nosso plano de teste atual), vamos usar PREFERENCE (pagamento único)
-        // Isso ajuda a passar pelo anti-fraude que costuma barrar assinaturas recorrentes novas.
-        if (planType === "mensal") {
-            const preference = new Preference(mpClient);
-            const result = await preference.create({
-                body: {
-                    items: [
-                        {
-                            id: "mensal",
-                            title: plan.reason,
-                            quantity: 1,
-                            unit_price: plan.amount,
-                            currency_id: "BRL",
-                        }
-                    ],
-                    back_urls: {
-                        success: `${siteUrl}/dashboard?success=true`,
-                        failure: `${siteUrl}/dashboard?error=payment_failed`,
-                        pending: `${siteUrl}/dashboard?status=pending`,
-                    },
-                    auto_return: "approved",
-                    external_reference: user.id,
-                    payer: {
-                        email: user.email || "",
-                    }
-                }
-            });
-
-            console.log("Mercado Pago Preference Result:", JSON.stringify(result, null, 2));
-            return NextResponse.json({ url: result.init_point });
-        } 
-        
-        // Para os outros planos, mantemos a Assinatura Recorrente (PreApproval)
         const preapproval = new PreApproval(mpClient);
         const result = await preapproval.create({
             body: {
                 reason: plan.reason,
                 auto_recurring: {
-                    frequency: plan.frequency!,
-                    frequency_type: plan.frequencyType!,
+                    frequency: plan.frequency,
+                    frequency_type: plan.frequencyType,
                     transaction_amount: plan.amount,
                     currency_id: "BRL",
                 },
@@ -98,7 +67,6 @@ export async function POST(req: Request) {
             },
         });
 
-        console.log("Mercado Pago PreApproval Result:", JSON.stringify(result, null, 2));
         return NextResponse.json({ url: result.init_point });
 
     } catch (err: any) {
