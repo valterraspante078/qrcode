@@ -49,6 +49,8 @@ function LoginContent() {
     const [error, setError] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
     const [emailSent, setEmailSent] = useState(false)
+    const [resetEmailSent, setResetEmailSent] = useState(false)
+    const [isForgotPassword, setIsForgotPassword] = useState(false)
 
     const supabase = createClient()
     const router = useRouter()
@@ -59,8 +61,10 @@ function LoginContent() {
         const mode = searchParams.get("mode");
         if (mode === "signup") {
             setIsSignUp(true);
+            setIsForgotPassword(false);
         } else if (mode === "login") {
             setIsSignUp(false);
+            setIsForgotPassword(false);
         }
 
         // Show error from URL params (e.g., from auth callback)
@@ -104,8 +108,34 @@ function LoginContent() {
         }
     }
 
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError(null)
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
+            })
+
+            if (error) {
+                setError(translateError(error.message))
+            } else {
+                setResetEmailSent(true)
+            }
+        } catch (err: unknown) {
+            setError(`Erro inesperado: ${err instanceof Error ? err.message : "Tente novamente mais tarde."}`)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (isForgotPassword) {
+            return handleForgotPassword(e)
+        }
 
         if (!supabase) {
             setError("Erro: Configuração do Supabase ausente. Verifique as variáveis de ambiente.")
@@ -168,8 +198,8 @@ function LoginContent() {
         }
     }
 
-    // Email Confirmation Screen
-    if (emailSent) {
+    // Email Confirmation Screen (Signup or Password Reset)
+    if (emailSent || resetEmailSent) {
         return (
             <main className="min-h-screen flex items-center justify-center p-6 bg-[#0a0a0a] relative overflow-hidden">
                 {/* Background decorations */}
@@ -187,10 +217,13 @@ function LoginContent() {
 
                         <div className="space-y-2">
                             <h1 className="text-2xl font-extrabold tracking-tight font-[var(--font-display)]">
-                                Verifique seu e-mail
+                                {resetEmailSent ? "E-mail de recuperação enviado" : "Verifique seu e-mail"}
                             </h1>
                             <p className="text-muted-foreground text-sm leading-relaxed">
-                                Enviamos um link de confirmação para{" "}
+                                {resetEmailSent 
+                                    ? "Se este e-mail estiver cadastrado, você receberá um link para redefinir sua senha em:"
+                                    : "Enviamos um link de confirmação para:"}
+                                <br />
                                 <span className="text-blue-400 font-semibold">{email}</span>.
                             </p>
                         </div>
@@ -203,8 +236,9 @@ function LoginContent() {
                         <button
                             onClick={() => {
                                 setEmailSent(false)
+                                setResetEmailSent(false)
                                 setIsSignUp(false)
-                                setEmail("")
+                                setIsForgotPassword(false)
                                 setPassword("")
                             }}
                             className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium group"
@@ -235,37 +269,41 @@ function LoginContent() {
                             </div>
                         </div>
                         <h1 className="text-3xl font-extrabold tracking-tight gradient-text">
-                            {isSignUp ? "Crie sua conta" : "Bem-vindo de volta"}
+                            {isForgotPassword ? "Recuperar senha" : (isSignUp ? "Crie sua conta" : "Bem-vindo de volta")}
                         </h1>
                         <p className="text-muted-foreground text-sm">
-                            {isSignUp
-                                ? "Comece hoje a proteger seus QR Codes."
-                                : "Acesse seu painel e gerencie seus QR Codes."}
+                            {isForgotPassword 
+                                ? "Enviaremos um link para seu e-mail."
+                                : (isSignUp ? "Comece hoje a proteger seus QR Codes." : "Acesse seu painel e gerencie seus QR Codes.")}
                         </p>
                     </div>
 
-                    {/* Google OAuth Button */}
-                    <button
-                        onClick={handleGoogleLogin}
-                        disabled={googleLoading || loading}
-                        className="w-full h-12 rounded-xl bg-white hover:bg-gray-100 text-gray-800 font-semibold transition-all flex items-center justify-center gap-3 group disabled:opacity-50 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-                    >
-                        {googleLoading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
-                        ) : (
-                            <>
-                                <GoogleLogo className="w-5 h-5" />
-                                <span className="text-sm">{isSignUp ? "Cadastrar com Google" : "Entrar com Google"}</span>
-                            </>
-                        )}
-                    </button>
+                    {!isForgotPassword && (
+                        <>
+                            {/* Google OAuth Button */}
+                            <button
+                                onClick={handleGoogleLogin}
+                                disabled={googleLoading || loading}
+                                className="w-full h-12 rounded-xl bg-white hover:bg-gray-100 text-gray-800 font-semibold transition-all flex items-center justify-center gap-3 group disabled:opacity-50 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                {googleLoading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+                                ) : (
+                                    <>
+                                        <GoogleLogo className="w-5 h-5" />
+                                        <span className="text-sm">{isSignUp ? "Cadastrar com Google" : "Entrar com Google"}</span>
+                                    </>
+                                )}
+                            </button>
 
-                    {/* Divider */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex-1 h-px bg-white/10" />
-                        <span className="text-xs text-muted-foreground uppercase tracking-widest font-medium">ou</span>
-                        <div className="flex-1 h-px bg-white/10" />
-                    </div>
+                            {/* Divider */}
+                            <div className="flex items-center gap-4">
+                                <div className="flex-1 h-px bg-white/10" />
+                                <span className="text-xs text-muted-foreground uppercase tracking-widest font-medium">ou</span>
+                                <div className="flex-1 h-px bg-white/10" />
+                            </div>
+                        </>
+                    )}
 
                     {/* Email/Password Form */}
                     <form onSubmit={handleAuth} className="space-y-4">
@@ -282,25 +320,40 @@ function LoginContent() {
                                 />
                             </div>
 
-                            <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-blue-400 transition-colors" />
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Sua senha"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full h-12 pl-12 pr-12 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm"
-                                    required
-                                />
+                            {!isForgotPassword && (
+                                <div className="relative group">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-blue-400 transition-colors" />
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Sua senha"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full h-12 pl-12 pr-12 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Forgot Password link (only in login mode) */}
+                        {!isSignUp && !isForgotPassword && (
+                            <div className="flex justify-end">
                                 <button
                                     type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                                    onClick={() => setIsForgotPassword(true)}
+                                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
                                 >
-                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    Esqueci minha senha
                                 </button>
                             </div>
-                        </div>
+                        )}
 
                         {error && (
                             <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center font-medium animate-shake">
@@ -314,25 +367,40 @@ function LoginContent() {
                         >
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                 <>
-                                    {isSignUp ? "Criar Conta" : "Entrar"}
+                                    {isForgotPassword ? "Enviar link de recuperação" : (isSignUp ? "Criar Conta" : "Entrar")}
                                     <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
                                 </>
                             )}
                         </button>
+
+                        {isForgotPassword && (
+                            <div className="text-center pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsForgotPassword(false)}
+                                    className="text-sm text-muted-foreground hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                    Voltar para login
+                                </button>
+                            </div>
+                        )}
                     </form>
 
                     {/* Toggle Sign Up / Sign In */}
-                    <div className="pt-2 text-center border-t border-white/5">
-                        <button
-                            onClick={() => {
-                                setIsSignUp(!isSignUp)
-                                setError(null)
-                            }}
-                            className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium pt-4 inline-block"
-                        >
-                            {isSignUp ? "Já tem conta? Entre aqui" : "Novo por aqui? Crie uma conta agora!"}
-                        </button>
-                    </div>
+                    {!isForgotPassword && (
+                        <div className="pt-2 text-center border-t border-white/5">
+                            <button
+                                onClick={() => {
+                                    setIsSignUp(!isSignUp)
+                                    setError(null)
+                                }}
+                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium pt-4 inline-block"
+                            >
+                                {isSignUp ? "Já tem conta? Entre aqui" : "Novo por aqui? Crie uma conta agora!"}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer link */}
