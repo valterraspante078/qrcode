@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 // Configuração dos planos
 const PLANS: Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }> = {
     mensal: {
-        reason: "QR Code da Fortuna — Plano Mensal",
+        reason: "QR Code da Fortuna — Plano Mensal (TESTE)",
         frequency: 1,
         frequencyType: "months",
-        amount: 50,
+        amount: 1,
     },
     trimestral: {
         reason: "QR Code da Fortuna — Plano Trimestral",
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         });
         console.log("Mercado Pago PreApproval Result:", JSON.stringify(result, null, 2));
 
-        return NextResponse.json({ url: (result as any).sandbox_init_point || result.init_point });
+        return NextResponse.json({ url: result.init_point });
     } catch (err: any) {
         console.error("Erro MP:", err);
         const errorMessage =
