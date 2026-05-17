@@ -67,8 +67,9 @@ export async function POST(req: Request) {
                 external_reference: user.id,
             },
         });
+        console.log("Mercado Pago PreApproval Result:", JSON.stringify(result, null, 2));
 
-        return NextResponse.json({ url: result.init_point });
+        return NextResponse.json({ url: (result as any).sandbox_init_point || result.init_point });
     } catch (err: any) {
         console.error("Erro MP:", err);
         const errorMessage =
