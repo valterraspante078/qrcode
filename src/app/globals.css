@@ -256,3 +256,32 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.25rem;
   margin-bottom: 2.5rem;
 }
+
+/* Login Page Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.login-card-enter {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
