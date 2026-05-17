@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 // Configuração dos planos
 const PLANS: Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }> = {
     mensal: {
-        reason: "QR Code da Fortuna — Plano Mensal (TESTE)",
+        reason: "QR Code da Fortuna — Plano Mensal",
         frequency: 1,
         frequencyType: "months",
-        amount: 1,
+        amount: 5,
     },
     trimestral: {
         reason: "QR Code da Fortuna — Plano Trimestral",
