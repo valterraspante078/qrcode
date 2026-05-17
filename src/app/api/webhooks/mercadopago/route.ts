@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { mpClient } from "@/lib/mercadopago";
-import { PreApproval } from "mercadopago";
+import { PreApproval, Payment } from "mercadopago";
 
 export const dynamic = "force-dynamic";
 
@@ -19,68 +19,84 @@ export async function POST(req: Request) {
         const body = await req.json();
         console.log("Mercado Pago Webhook Received:", JSON.stringify(body, null, 2));
 
-        // Mercado Pago envia notificações com type e data.id
-        const { type, data } = body;
+        // Mercado Pago envia notificações com type e data.id ou action/data.id
+        const type = body.type || body.action;
+        const dataId = body.data?.id || body.id;
 
+        if (!dataId) {
+            return NextResponse.json({ received: true }); // Ignora notificações sem ID
+        }
+
+        // --- CASO 1: ASSINATURA RECORRENTE ---
         if (type === "subscription_preapproval") {
             const preapproval = new PreApproval(mpClient);
-            const subscription = await preapproval.get({ id: data.id });
+            const subscription = await preapproval.get({ id: dataId });
 
             const userId = subscription.external_reference;
             const status = subscription.status;
 
-            if (!userId) {
-                return NextResponse.json({ error: "external_reference ausente" }, { status: 400 });
-            }
+            if (!userId) return NextResponse.json({ error: "external_reference ausente" }, { status: 400 });
 
             if (status === "authorized") {
-                // Assinatura ativada — upgrade para PRO
                 await supabaseAdmin
                     .from("profiles")
                     .update({
-                        mp_subscription_id: data.id,
+                        mp_subscription_id: dataId,
                         subscription_status: "active",
                         subscription_tier: "pro",
                     })
                     .eq("id", userId);
 
-                // Reativar todos os QR Codes do usuário
-                await supabaseAdmin
-                    .from("qr_codes")
-                    .update({ is_active: true })
-                    .eq("user_id", userId);
+                await supabaseAdmin.from("qr_codes").update({ is_active: true }).eq("user_id", userId);
 
-                // --- SISTEMA DE AFILIADOS / COMISSÃO ---
-                const { data: profile } = await supabaseAdmin
-                    .from("profiles")
-                    .select("referred_by")
-                    .eq("id", userId)
-                    .single();
-
+                // Comissão Afiliado
+                const { data: profile } = await supabaseAdmin.from("profiles").select("referred_by").eq("id", userId).single();
                 if (profile?.referred_by && subscription.auto_recurring?.transaction_amount) {
-                    // 40% de comissão
-                    const commissionAmount = subscription.auto_recurring.transaction_amount * 0.40;
-
-                    // Registra comissão
-                    await supabaseAdmin
-                        .from("commissions")
-                        .insert({
-                            affiliate_id: profile.referred_by,
-                            buyer_id: userId,
-                            amount: commissionAmount,
-                            status: "pending"
-                        });
+                    await supabaseAdmin.from("commissions").insert({
+                        affiliate_id: profile.referred_by,
+                        buyer_id: userId,
+                        amount: subscription.auto_recurring.transaction_amount * 0.40,
+                        status: "pending"
+                    });
                 }
-
             } else if (status === "cancelled" || status === "paused") {
-                // Assinatura cancelada ou pausada — downgrade para FREE
+                await supabaseAdmin
+                    .from("profiles")
+                    .update({ subscription_status: "inactive", subscription_tier: "free" })
+                    .eq("mp_subscription_id", dataId);
+            }
+        }
+
+        // --- CASO 2: PAGAMENTO ÚNICO (PREFERENCE/PIX/TESTE) ---
+        if (type === "payment.created" || type === "payment" || type === "payment.updated") {
+            const payment = new Payment(mpClient);
+            const paymentData = await payment.get({ id: dataId });
+
+            const userId = paymentData.external_reference;
+            const status = paymentData.status;
+
+            if (userId && status === "approved") {
+                // Upgrade para PRO
                 await supabaseAdmin
                     .from("profiles")
                     .update({
-                        subscription_status: "inactive",
-                        subscription_tier: "free",
+                        subscription_status: "active",
+                        subscription_tier: "pro",
                     })
-                    .eq("mp_subscription_id", data.id);
+                    .eq("id", userId);
+
+                await supabaseAdmin.from("qr_codes").update({ is_active: true }).eq("user_id", userId);
+
+                // Comissão Afiliado
+                const { data: profile } = await supabaseAdmin.from("profiles").select("referred_by").eq("id", userId).single();
+                if (profile?.referred_by && paymentData.transaction_amount) {
+                    await supabaseAdmin.from("commissions").insert({
+                        affiliate_id: profile.referred_by,
+                        buyer_id: userId,
+                        amount: paymentData.transaction_amount * 0.40,
+                        status: "pending"
+                    });
+                }
             }
         }
 
