@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts"
 import { BarChart3, QrCode, Smartphone, Globe, ArrowUpRight, Clock, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { format, subDays, startOfDay, isWithinInterval } from "date-fns"
+import { format, subDays, startOfDay } from "date-fns"
 
 export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true)
@@ -23,7 +23,6 @@ export default function AnalyticsPage() {
     const supabase = createClient()
 
     useEffect(() => {
-        const supabase = createClient()
         if (!supabase) {
             setLoading(false)
             return

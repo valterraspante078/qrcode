@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { User, Lock, ShieldCheck, Mail, Save, RefreshCw, Smartphone, CheckCircle2 } from "lucide-react"
+import { User, Lock, Mail, Save, RefreshCw, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
@@ -12,22 +12,6 @@ export default function SettingsPage() {
     const [profile, setProfile] = useState<any>({ display_name: "" })
     const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" })
     const [message, setMessage] = useState({ type: "", text: "" })
-    const [mfaEnabled, setMfaEnabled] = useState(false)
-    const [verifyingMfa, setVerifyingMfa] = useState(false)
-    const [verificationCode, setVerificationCode] = useState("")
-    const [phoneNumber, setPhoneNumber] = useState("")
-
-    const formatPhone = (value: string) => {
-        const digits = value.replace(/\D/g, "").slice(0, 12)
-        if (digits.length <= 2) return digits
-        if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 12)}`
-    }
-
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const raw = e.target.value.replace(/\D/g, "").slice(0, 12)
-        setPhoneNumber(raw)
-    }
 
     const supabase = createClient()
 
@@ -208,129 +192,6 @@ export default function SettingsPage() {
                         {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
                         Atualizar Senha
                     </button>
-                </div>
-
-                <div className="col-span-full border-t border-white/5 my-4" />
-
-                {/* 2FA Section */}
-                <div className="md:col-span-1 space-y-2">
-                    <h3 className="text-xl font-bold italic uppercase tracking-tight flex items-center gap-2">
-                        <ShieldCheck className="w-5 h-5 text-green-500" />
-                        2FA (SMS)
-                    </h3>
-                    <p className="text-muted-foreground text-sm">Adicione uma camada extra de proteção ao seu império.</p>
-                </div>
-
-                <div className="md:col-span-2 glass rounded-[2rem] border-white/5 p-8 flex items-center justify-between group hover:border-green-500/20 transition-all">
-                    <div className="space-y-4 flex-1 mr-8">
-                        <div className="flex items-center gap-4">
-                            <div className={cn(
-                                "p-3 rounded-2xl bg-white/5 text-muted-foreground group-hover:bg-green-500/10 group-hover:text-green-500 transition-all shadow-xl",
-                                mfaEnabled && "bg-green-500/20 text-green-500"
-                            )}>
-                                <Smartphone className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-white uppercase tracking-tight">Autenticação por Celular</h4>
-                                <p className="text-xs text-muted-foreground">Receba códigos via SMS para cada login.</p>
-                            </div>
-                        </div>
-
-                        {mfaEnabled ? (
-                            <div className="flex items-center gap-2 text-green-500 font-bold text-sm">
-                                <CheckCircle2 className="w-4 h-4" />
-                                Configurado e Ativo
-                            </div>
-                        ) : verifyingMfa ? (
-                            <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Código de Verificação (Enviado para {formatPhone(phoneNumber)})</label>
-                                    <div className="flex gap-2">
-                                        {[0, 1, 2, 3, 4, 5].map((i) => (
-                                            <input
-                                                key={i}
-                                                type="text"
-                                                maxLength={1}
-                                                value={verificationCode[i] || ""}
-                                                onChange={(e) => {
-                                                    const target = e.target as HTMLInputElement
-                                                    const val = target.value.replace(/\D/g, "")
-                                                    if (val) {
-                                                        const newCode = verificationCode.split("")
-                                                        newCode[i] = val
-                                                        setVerificationCode(newCode.join("").slice(0, 6))
-                                                        // Auto focus next
-                                                        if (i < 5) (target.nextSibling as HTMLInputElement)?.focus()
-                                                    }
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Backspace" && !verificationCode[i] && i > 0) {
-                                                        const target = e.target as HTMLInputElement
-                                                        const newCode = verificationCode.split("")
-                                                        newCode[i - 1] = ""
-                                                        setVerificationCode(newCode.join(""))
-                                                            ; (target.previousSibling as HTMLInputElement)?.focus()
-                                                    }
-                                                }}
-                                                className="w-full h-12 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-green-500/50 outline-none text-center text-xl font-bold font-mono"
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground/60 italic">Dica: Para teste, qualquer código de 6 dígitos funciona!</p>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() => {
-                                            if (verificationCode.length === 6) {
-                                                setMfaEnabled(true)
-                                                setVerifyingMfa(false)
-                                                setMessage({ type: "success", text: "2FA Ativado com sucesso!" })
-                                            }
-                                        }}
-                                        className="flex-1 h-12 rounded-xl bg-green-500 hover:bg-green-400 text-white font-bold text-xs transition-all uppercase tracking-widest"
-                                    >
-                                        Verificar e Ativar
-                                    </button>
-                                    <button
-                                        onClick={() => setVerifyingMfa(false)}
-                                        className="px-6 h-12 rounded-xl bg-white/5 hover:bg-white/10 text-muted-foreground border border-white/10 font-bold text-xs transition-all"
-                                    >
-                                        Cancelar
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Número do Celular</label>
-                                        <span className="text-[10px] font-mono text-muted-foreground/40">{phoneNumber.length}/12</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <div className="w-16 h-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-xs font-black text-blue-400">+55</div>
-                                        <input
-                                            type="text"
-                                            value={formatPhone(phoneNumber)}
-                                            onChange={handlePhoneChange}
-                                            className="flex-1 h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-lg font-mono tracking-widest text-blue-100"
-                                            placeholder="(00) 00000-0000"
-                                        />
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => phoneNumber.length >= 10 && setVerifyingMfa(true)}
-                                    disabled={phoneNumber.length < 10}
-                                    className="px-6 h-12 rounded-xl bg-green-500/10 hover:bg-green-500/20 text-green-500 border border-green-500/20 font-bold text-xs transition-all uppercase tracking-widest disabled:opacity-20 disabled:cursor-not-allowed"
-                                >
-                                    Configurar Agora
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="hidden lg:block w-32 h-32 opacity-20 group-hover:opacity-40 transition-all">
-                        <ShieldCheck className="w-full h-full text-green-500" />
-                    </div>
                 </div>
             </div>
         </div>

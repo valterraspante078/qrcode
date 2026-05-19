@@ -9,7 +9,8 @@ import { QRNameEditor } from "@/components/dashboard/QRNameEditor"
 import { QRRowActions } from "@/components/dashboard/QRRowActions"
 import { PaymentTracker } from "@/components/PaymentTracker"
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+    const isSuccess = searchParams?.success === "true"
     const supabase = await createClient()
 
     if (!supabase) {
@@ -53,6 +54,11 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-10">
+            {isSuccess && (
+                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 font-bold flex items-center justify-between text-sm animate-in slide-in-from-top-2">
+                    ✅ Assinatura confirmada com sucesso! Aproveite todos os recursos.
+                </div>
+            )}
             <PaymentTracker />
             
             {/* Welcome Card */}

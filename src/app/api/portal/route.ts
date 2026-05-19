@@ -18,33 +18,42 @@ export async function POST() {
     }
 
     try {
-        // Buscar o mp_subscription_id do perfil
+        // Buscar o perfil do usuário
         const { data: profile } = await supabase
             .from("profiles")
-            .select("mp_subscription_id")
+            .select("mp_subscription_id, subscription_status")
             .eq("id", user.id)
             .single();
 
-        if (!profile?.mp_subscription_id) {
+        // Se o usuário não é PRO e nem tem assinatura, não há o que cancelar
+        if (profile?.subscription_status !== "active" && !profile?.mp_subscription_id) {
             return NextResponse.json(
-                { error: "Nenhuma assinatura encontrada para este usuário" },
+                { error: "Nenhuma assinatura ativa encontrada para este usuário" },
                 { status: 400 }
             );
         }
 
-        // Cancelar assinatura via API do Mercado Pago
-        const preapproval = new PreApproval(mpClient);
-        await preapproval.update({
-            id: profile.mp_subscription_id,
-            body: { status: "cancelled" },
-        });
+        // Se houver um ID de assinatura do Mercado Pago, tentamos cancelar lá
+        if (profile?.mp_subscription_id) {
+            try {
+                const preapproval = new PreApproval(mpClient);
+                await preapproval.update({
+                    id: profile.mp_subscription_id,
+                    body: { status: "cancelled" },
+                });
+            } catch (mpError) {
+                console.error("Erro ao cancelar no Mercado Pago:", mpError);
+                // Mesmo que o MP falhe (ex: já estava cancelada ou foi compra avulsa via preference hack), continuamos e downgradeamos no DB
+            }
+        }
 
-        // Atualizar perfil localmente
+        // Atualizar perfil localmente (downgrade para FREE)
         await supabase
             .from("profiles")
             .update({
                 subscription_status: "inactive",
                 subscription_tier: "free",
+                mp_subscription_id: null,
             })
             .eq("id", user.id);
 

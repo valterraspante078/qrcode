@@ -23,22 +23,29 @@ const softwareAppJsonLd = {
       "@type": "Offer",
       price: "0",
       priceCurrency: "BRL",
-      name: "Gratuito (14 dias)",
-      description: "Teste grátis por 14 dias com todas as funcionalidades.",
+      name: "Plano Gratuito",
+      description: "1 QR Code ativo e recursos básicos.",
     },
     {
       "@type": "Offer",
       price: "50.00",
       priceCurrency: "BRL",
+      name: "Plano Mensal",
+      description: "QR Codes ilimitados, analytics premium e suporte VIP.",
+    },
+    {
+      "@type": "Offer",
+      price: "75.00",
+      priceCurrency: "BRL",
+      name: "Plano Trimestral",
+      description: "QR Codes ilimitados com desconto trimestral.",
+    },
+    {
+      "@type": "Offer",
+      price: "150.00",
+      priceCurrency: "BRL",
       name: "Plano Anual",
       description: "QR Codes ilimitados, domínio customizado e suporte 24/7.",
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price: "50.00",
-        priceCurrency: "BRL",
-        unitText: "MONTH",
-        billingDuration: "P1Y",
-      },
     },
   ],
   aggregateRating: {
@@ -146,10 +153,10 @@ export default function Home() {
           </div>
           <span className="text-xl font-bold tracking-tight">Gerador de Qr Code</span>
         </div>
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Recursos</a>
-          <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">Planos</a>
-          <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">FAQ</a>
+        <div className="flex items-center gap-4 md:gap-8">
+          <a href="#features" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">Recursos</a>
+          <a href="#pricing" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">Planos</a>
+          <a href="#faq" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">FAQ</a>
           <Link href="/login" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-gray-200 transition-colors">
             Acessar Painel
           </Link>
@@ -235,10 +242,10 @@ export default function Home() {
           <div>
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Produtos</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-white transition-colors">QR Code Dinâmico</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">QR Code para Pix</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">QR Code para WhatsApp</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Menus Digitais</a></li>
+              <li><a href="#features" className="hover:text-white transition-colors">QR Code Dinâmico</a></li>
+              <li><a href="#faq" className="hover:text-white transition-colors">QR Code para Pix</a></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">QR Code para WhatsApp</Link></li>
+              <li><a href="#features" className="hover:text-white transition-colors">Menus Digitais</a></li>
             </ul>
           </div>
 

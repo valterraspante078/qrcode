@@ -62,7 +62,6 @@ export async function POST(req: Request) {
                     currency_id: "BRL",
                 },
                 back_url: `${siteUrl}/dashboard?success=true`,
-                payer_email: user.email || "",
                 external_reference: user.id,
             },
         });

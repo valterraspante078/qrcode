@@ -31,6 +31,35 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/termos",
+        destination: "/termos-de-uso",
+        permanent: true,
+      },
+      {
+        source: "/sobre",
+        destination: "/sobre-nos",
+        permanent: true,
+      },
+      {
+        source: "/quem-somos",
+        destination: "/sobre-nos",
+        permanent: true,
+      },
+      {
+        source: "/politica-de-privacidade",
+        destination: "/privacidade",
+        permanent: true,
+      },
+      {
+        source: "/faq",
+        destination: "/#faq",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
