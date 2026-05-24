@@ -154,10 +154,10 @@ export default function Home() {
           <span className="text-xl font-bold tracking-tight">Gerador de Qr Code</span>
         </div>
         <div className="flex items-center gap-4 md:gap-8">
-          <a href="#features" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">Recursos</a>
-          <a href="#pricing" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">Planos</a>
-          <a href="#faq" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-white transition-colors">FAQ</a>
-          <Link href="/login" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-gray-200 transition-colors">
+          <a href="#features" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Recursos</a>
+          <a href="#pricing" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Planos</a>
+          <a href="#faq" className="hidden md:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+          <Link href="/login" className="px-5 py-2.5 rounded-full bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-all duration-200 hover:scale-105 active:scale-95 shadow-md">
             Acessar Painel
           </Link>
         </div>
@@ -227,7 +227,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full border-t border-white/5 py-20 px-6">
+      <footer className="w-full border-t border-border py-20 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -242,34 +242,34 @@ export default function Home() {
           <div>
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Produtos</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
-              <li><a href="#features" className="hover:text-white transition-colors">QR Code Dinâmico</a></li>
-              <li><a href="#faq" className="hover:text-white transition-colors">QR Code para Pix</a></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">QR Code para WhatsApp</Link></li>
-              <li><a href="#features" className="hover:text-white transition-colors">Menus Digitais</a></li>
+              <li><a href="#features" className="hover:text-foreground transition-colors">QR Code Dinâmico</a></li>
+              <li><a href="#faq" className="hover:text-foreground transition-colors">QR Code para Pix</a></li>
+              <li><Link href="/blog" className="hover:text-foreground transition-colors">QR Code para WhatsApp</Link></li>
+              <li><a href="#features" className="hover:text-foreground transition-colors">Menus Digitais</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Empresa</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
-              <li><Link href="/sobre-nos" className="hover:text-white transition-colors">Sobre Nós</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Blog de SEO</Link></li>
-              <li><Link href="/afiliados" className="hover:text-white transition-colors">Afiliados</Link></li>
-              <li><Link href="/contato" className="hover:text-white transition-colors">Contato</Link></li>
+              <li><Link href="/sobre-nos" className="hover:text-foreground transition-colors">Sobre Nós</Link></li>
+              <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog de SEO</Link></li>
+              <li><Link href="/afiliados" className="hover:text-foreground transition-colors">Afiliados</Link></li>
+              <li><Link href="/contato" className="hover:text-foreground transition-colors">Contato</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-blue-400">Legal</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
-              <li><Link href="/termos-de-uso" className="hover:text-white transition-colors">Termos de Uso</Link></li>
-              <li><Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link></li>
-              <li><Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link></li>
+              <li><Link href="/termos-de-uso" className="hover:text-foreground transition-colors">Termos de Uso</Link></li>
+              <li><Link href="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link></li>
+              <li><Link href="/cookies" className="hover:text-foreground transition-colors">Cookies</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-7xl mx-auto pt-10 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-muted-foreground text-sm">© 2026 Gerador de Qr Code. Todos os direitos reservados.</p>
           <div className="flex gap-4 text-xs text-muted-foreground/30 italic">
             <span>Gerador de QR Code Online</span>
@@ -286,7 +286,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
-    <div className="p-8 rounded-3xl bg-card border border-white/5 space-y-4 hover:border-blue-500/30 transition-colors">
+    <div className="p-8 rounded-3xl bg-card border border-border space-y-4 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1">
       <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">{icon}</div>
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
@@ -296,9 +296,9 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
-    <details className="group rounded-2xl border border-white/5 bg-card/50 backdrop-blur-sm overflow-hidden transition-all hover:border-blue-500/20">
+    <details className="group rounded-2xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden transition-all hover:border-blue-500/40">
       <summary className="flex items-center justify-between px-8 py-6 cursor-pointer list-none select-none">
-        <h3 className="text-base font-bold text-white group-open:text-blue-400 transition-colors pr-4">
+        <h3 className="text-base font-bold text-foreground group-open:text-blue-400 transition-colors pr-4">
           {question}
         </h3>
         <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-300 group-open:rotate-180 group-open:text-blue-400" />

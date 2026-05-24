@@ -1,13 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, QrCode, Globe, Zap, ArrowUpRight, BarChart3, Loader2 } from "lucide-react"
+import { Users, QrCode, Globe, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { UserList } from "@/components/admin/UserList"
 import { AdminQRTable } from "@/components/admin/AdminQRTable"
 
+interface AdminStats {
+    totalUsers: number
+    totalQrs: number
+    activeQrs: number
+    publicQrs: number
+}
+
 export default function AdminDashboard() {
-    const [stats, setStats] = useState<any>(null)
+    const [stats, setStats] = useState<AdminStats | null>(null)
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<"users" | "registered" | "public">("users")
 
@@ -62,7 +69,14 @@ export default function AdminDashboard() {
     )
 }
 
-function AdminStatCard({ title, value, icon, color }: any) {
+interface AdminStatCardProps {
+    title: string
+    value: string | number
+    icon: React.ReactNode
+    color?: string
+}
+
+function AdminStatCard({ title, value, icon, color }: AdminStatCardProps) {
     return (
         <div className="p-8 rounded-[2rem] bg-[#0c0c0c] border border-white/5 flex items-center justify-between group hover:border-red-500/20 transition-all shadow-xl hover:shadow-2xl">
             <div className="space-y-2">

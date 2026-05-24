@@ -35,8 +35,9 @@ export async function GET(req: Request) {
         if (error) throw error;
 
         return NextResponse.json(qrs);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
 
@@ -49,7 +50,7 @@ export async function PATCH(req: Request) {
     const supabase = createAdminClient();
 
     try {
-        let updateData: any = {};
+        const updateData: { expires_at?: string | null } = {};
 
         if (action === "extend") {
             // Extend 14 days from now or from current expiration?
@@ -78,7 +79,8 @@ export async function PATCH(req: Request) {
         if (error) throw error;
 
         return NextResponse.json({ success: true });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

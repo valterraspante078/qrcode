@@ -57,7 +57,7 @@ export default function TermosPage() {
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">5. Propriedade Intelectual</h2>
                     <p>
-                        A engine, software, layout do site, nomes e marcas "Gerador de QR Code da Fortuna" são propriedades da detentora e estão resguardadas por leis de proteção autoral e intelectual.
+                        A engine, software, layout do site, nomes e marcas &quot;Gerador de QR Code da Fortuna&quot; são propriedades da detentora e estão resguardadas por leis de proteção autoral e intelectual.
                     </p>
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">6. Alterações e Atualizações de Termos</h2>

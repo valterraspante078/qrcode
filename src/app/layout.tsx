@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import React from "react";
 import "./globals.css";
 import Script from "next/script";
 import { Suspense } from "react";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
+import ThemeSelector from "@/components/ThemeSelector";
 
 declare global {
   interface Window {
-    dataLayer: any[];
-    gtag: (...args: any[]) => void;
+    dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
   }
 }
 
@@ -36,17 +38,22 @@ export const metadata: Metadata = {
     "Crie QR Codes profissionais, dinâmicos e rastreáveis em segundos. Personalize com sua marca, gere códigos para Pix, WhatsApp e links. O melhor Gerador de Qr Code do Brasil.",
   keywords: [
     "gerador de qr code",
+    "gerador de qr code grátis",
     "criar qr code",
+    "gerar qr code",
+    "fazer qr code",
     "qr code dinâmico",
     "qr code pix",
-    "qr code grátis",
-    "qr code para restaurante",
-    "qr code para cardápio",
+    "gerador de qr code pix",
     "qr code personalizado",
     "qr code rastreável",
-    "qr code para whatsapp",
-    "melhor gerador de qr code",
-    "gerar qr code online",
+    "qr code wifi",
+    "qr code whatsapp",
+    "cardápio qr code",
+    "gerador de qrcode",
+    "criar qrcode",
+    "gerador qr code",
+    "melhor gerador de qr code"
   ],
   authors: [{ name: "Gerador de Qr Code" }],
   creator: "Gerador de Qr Code",
@@ -100,7 +107,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${lexend.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${lexend.variable} dark`}>
       <body className="antialiased min-h-screen">
         {/* Google tag (gtag.js) */}
         <Script 
@@ -119,6 +126,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <AffiliateTracker />
         </Suspense>
+        <ThemeSelector />
         {children}
         <Analytics />
         <SpeedInsights />

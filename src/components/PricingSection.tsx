@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronRight, Loader2 } from "lucide-react"
+import { ChevronRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 
@@ -12,6 +12,8 @@ interface PricingCardProps {
     planType: string
     features: string[]
     highlight?: boolean
+    onSelect: (planType: string) => void
+    loading: boolean
 }
 
 export function PricingSection() {
@@ -49,9 +51,10 @@ export function PricingSection() {
             if (checkoutData.url) {
                 window.location.href = checkoutData.url
             }
-        } catch (err: any) {
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
             console.error(err)
-            alert(`Erro no checkout: ${err.message}`)
+            alert(`Erro no checkout: ${message}`)
         } finally {
             setLoading(null)
         }
@@ -101,11 +104,11 @@ export function PricingSection() {
     )
 }
 
-function PricingCard({ title, price, period, features, highlight = false, onSelect, planType, loading }: any) {
+function PricingCard({ title, price, period, features, highlight = false, onSelect, planType, loading }: PricingCardProps) {
     return (
         <div className={cn(
             "p-10 rounded-[2.5rem] border transition-all flex flex-col relative",
-            highlight ? "bg-blue-600 border-blue-400 shadow-2xl shadow-blue-500/20 scale-105 z-10" : "bg-card border-white/5"
+            highlight ? "bg-blue-600 border-blue-400 shadow-2xl shadow-blue-500/20 scale-105 z-10" : "bg-card border-border"
         )}>
             <h3 className="text-xl font-bold mb-4">{title}</h3>
             <div className="flex items-baseline gap-1 mb-8">

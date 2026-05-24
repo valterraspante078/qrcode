@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
 import { Download, Copy, Check, Sparkles, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -52,7 +52,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
     }
 
     const downloadQR = async (format: "png" | "svg" = "png") => {
-        let currentId = qrId
+        const currentId = qrId
         if (!currentId) {
             // saveToDb will redirect to /generated; download will happen from that page
             await saveToDb()

@@ -26,7 +26,8 @@ export async function GET() {
             activeQrs: activeQrs.count || 0,
             publicQrs: publicQrs.count || 0,
         });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { User, Lock, Mail, Save, RefreshCw, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [user, setUser] = useState<any>(null)
-    const [profile, setProfile] = useState<any>({ display_name: "" })
+    const [user, setUser] = useState<SupabaseUser | null>(null)
+    const [profile, setProfile] = useState<{ display_name?: string; pix_key?: string }>({ display_name: "" })
     const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" })
     const [message, setMessage] = useState({ type: "", text: "" })
 
@@ -25,19 +26,20 @@ export default function SettingsPage() {
             if (!user) return
             setUser(user)
 
-            const { data: profile } = await supabase
+            const { data: profileData } = await supabase
                 .from("profiles")
                 .select("*")
                 .eq("id", user.id)
                 .single()
 
-            if (profile) setProfile(profile)
+            if (profileData) setProfile(profileData)
             setLoading(false)
         }
         fetchUser()
-    }, [])
+    }, [supabase])
 
     const handleUpdateProfile = async () => {
+        if (!user) return
         setSaving(true)
         setMessage({ type: "", text: "" })
 
@@ -53,8 +55,9 @@ export default function SettingsPage() {
 
             if (error) throw error
             setMessage({ type: "success", text: "Perfil atualizado com sucesso!" })
-        } catch (err: any) {
-            setMessage({ type: "error", text: err.message })
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            setMessage({ type: "error", text: message })
         } finally {
             setSaving(false)
         }
@@ -72,8 +75,9 @@ export default function SettingsPage() {
             if (error) throw error
             setMessage({ type: "success", text: "Senha alterada com sucesso!" })
             setPasswords({ current: "", new: "", confirm: "" })
-        } catch (err: any) {
-            setMessage({ type: "error", text: err.message })
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            setMessage({ type: "error", text: message })
         } finally {
             setSaving(false)
         }

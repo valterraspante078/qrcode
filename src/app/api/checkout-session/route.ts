@@ -68,13 +68,14 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ url: result.init_point });
 
-    } catch (err: any) {
+    } catch (err) {
         console.error("Erro MP:", err);
+        const errorObj = err as unknown;
         const errorMessage =
-            err?.message ||
-            err?.response?.data?.message ||
-            err?.cause?.[0]?.description ||
-            (typeof err === 'string' ? err : JSON.stringify(err)) ||
+            errorObj?.message ||
+            errorObj?.response?.data?.message ||
+            errorObj?.cause?.[0]?.description ||
+            (typeof errorObj === 'string' ? errorObj : JSON.stringify(errorObj)) ||
             "Erro ao processar assinatura";
             
         return NextResponse.json({ error: errorMessage }, { status: 500 });

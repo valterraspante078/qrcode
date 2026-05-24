@@ -12,6 +12,18 @@
 }
 
 :root {
+  --background: oklch(0.98 0.01 260);
+  --foreground: oklch(0.1 0.02 260);
+  
+  --card: oklch(0.95 0.01 260);
+  --card-foreground: oklch(0.1 0.02 260);
+  
+  --border: oklch(0.88 0.01 260);
+  --input: oklch(0.92 0.01 260);
+  --ring: oklch(0.6 0.25 260);
+}
+
+.dark {
   --background: oklch(0.1 0.02 260);
   --foreground: oklch(0.98 0.01 260);
   
@@ -32,6 +44,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h2, h3, h4, h5, h6 {

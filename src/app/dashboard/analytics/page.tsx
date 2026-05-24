@@ -2,37 +2,56 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts"
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts"
 import { BarChart3, QrCode, Smartphone, Globe, ArrowUpRight, Clock, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format, subDays, startOfDay } from "date-fns"
 
+interface ScanItem {
+    id: string
+    created_at: string
+    user_agent?: string | null
+    ip_address?: string | null
+    referer?: string | null
+    qr_codes?: {
+        name: string | null
+        user_id: string
+    } | null
+}
+
+interface AnalyticsStats {
+    total: number
+    today: number
+    last7Days: number
+    growth: number
+}
+
 export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true)
-    const [scans, setScans] = useState<any[]>([])
-    const [stats, setStats] = useState<any>({
+    const [scans, setScans] = useState<ScanItem[]>([])
+    const [stats, setStats] = useState<AnalyticsStats>({
         total: 0,
         today: 0,
         last7Days: 0,
         growth: 0
     })
-    const [dailyData, setDailyData] = useState<any[]>([])
-    const [deviceData, setDeviceData] = useState<any[]>([])
-    const [topQrs, setTopQrs] = useState<any[]>([])
+    const [dailyData, setDailyData] = useState<{ date: string; count: number }[]>([])
+    const [deviceData, setDeviceData] = useState<{ name: string; value: number; color: string }[]>([])
+    const [topQrs, setTopQrs] = useState<{ name: string; count: number }[]>([])
 
     const supabase = createClient()
 
     useEffect(() => {
         if (!supabase) {
-            setLoading(false)
-            return
+            setLoading(false);
+            return;
         }
 
         async function fetchStats() {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
+            if (!supabase) return;
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-            // Fetch scans joined with qr_codes to filter by user_id
             const { data: scanData, error } = await supabase
                 .from("scans")
                 .select(`
@@ -40,27 +59,26 @@ export default function AnalyticsPage() {
                     qr_codes!inner(name, user_id)
                 `)
                 .eq("qr_codes.user_id", user.id)
-                .order("created_at", { ascending: false })
+                .order("created_at", { ascending: false });
 
             if (error) {
-                console.error("Error fetching scans:", error)
-                setLoading(false)
-                return
+                console.error("Error fetching scans:", error);
+                setLoading(false);
+                return;
             }
 
-            processAnalytics(scanData)
-            setScans(scanData)
-            setLoading(false)
+            processAnalytics(scanData || []);
+            setScans((scanData as unknown as ScanItem[]) || []);
+            setLoading(false);
         }
 
-        fetchStats()
-    }, [])
+        fetchStats();
+    }, [supabase]);
 
-    const processAnalytics = (data: any[]) => {
+    const processAnalytics = (data: ScanItem[]) => {
         const now = new Date()
         const today = startOfDay(now)
         const sevenDaysAgo = subDays(today, 7)
-        const thirtyDaysAgo = subDays(today, 30)
 
         // 1. Basic Stats
         const total = data.length
@@ -77,7 +95,7 @@ export default function AnalyticsPage() {
         setStats({ total, today: todayScans, last7Days: last7DaysScans, growth })
 
         // 2. Daily Chart (Last 14 days)
-        const daily: any = {}
+        const daily: Record<string, number> = {}
         for (let i = 13; i >= 0; i--) {
             const dateStr = format(subDays(now, i), "dd/MM")
             daily[dateStr] = 0
@@ -91,7 +109,7 @@ export default function AnalyticsPage() {
         setDailyData(Object.keys(daily).map(k => ({ date: k, count: daily[k] })))
 
         // 3. Device Distribution
-        const devices: any = { Mobile: 0, Desktop: 0, Other: 0 }
+        const devices: Record<string, number> = { Mobile: 0, Desktop: 0, Other: 0 }
         data.forEach(s => {
             const ua = s.user_agent?.toLowerCase() || ""
             if (ua.includes("mobi") || ua.includes("android") || ua.includes("iphone")) devices.Mobile++
@@ -105,7 +123,7 @@ export default function AnalyticsPage() {
         ])
 
         // 4. Top QRs
-        const qrCounts: any = {}
+        const qrCounts: Record<string, number> = {}
         data.forEach(s => {
             const name = s.qr_codes?.name || "Sem Nome"
             qrCounts[name] = (qrCounts[name] || 0) + 1
@@ -301,7 +319,16 @@ export default function AnalyticsPage() {
     )
 }
 
-function StatCard({ title, value, icon, change, positive, color }: any) {
+interface StatCardProps {
+    title: string
+    value: string | number
+    icon: React.ReactNode
+    change?: string
+    positive?: boolean
+    color?: string
+}
+
+function StatCard({ title, value, icon, change, positive, color }: StatCardProps) {
     return (
         <div className="p-6 rounded-3xl bg-card/50 backdrop-blur-xl border border-white/5 flex items-center justify-between group hover:border-blue-500/30 transition-all shadow-xl">
             <div className="space-y-1">

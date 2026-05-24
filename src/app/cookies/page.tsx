@@ -26,7 +26,7 @@ export default function CookiesPage() {
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">O que exatamente são Cookies?</h2>
                     <p>
-                        Arquivos passivos salvos temporariamente na memória de longo termo ou curto termo (cache) no seu navegador ou telefone celular, emitido por nossos servidores do gateway, sendo ativados quando você navega de volta, melhorando substancialmente a velocidade e personalizando as janelas (para você não precisar fazer "login" novamente cada vez que abre o navegador).
+                        Arquivos passivos salvos temporariamente na memória de longo termo ou curto termo (cache) no seu navegador ou telefone celular, emitido por nossos servidores do gateway, sendo ativados quando você navega de volta, melhorando substancialmente a velocidade e personalizando as janelas (para você não precisar fazer &quot;login&quot; novamente cada vez que abre o navegador).
                     </p>
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">Quais Cookies Utilizamos no Portal?</h2>
@@ -38,7 +38,7 @@ export default function CookiesPage() {
 
                     <h3 className="text-lg font-bold text-white mt-6 mb-2">Cookies de Desempenho / Análise (Opcionais à LGPD)</h3>
                     <p>
-                        Conseguimos capturar a informação agregada e genérica através do <strong>Google Analytics</strong> ou mecanismos nativos que definem se o sistema travou ou entender relatórios, tal como "a quantidade de pessoas que apertou no botão Azul". Nenhuma destas captações é focada em expor seus atributos pessoais em hipótese nenhuma.
+                        Conseguimos capturar a informação agregada e genérica através do <strong>Google Analytics</strong> ou mecanismos nativos que definem se o sistema travou ou entender relatórios, tal como &quot;a quantidade de pessoas que apertou no botão Azul&quot;. Nenhuma destas captações é focada em expor seus atributos pessoais em hipótese nenhuma.
                     </p>
 
                     <h3 className="text-lg font-bold text-white mt-6 mb-2">Cookies de Publicidade ou Rastreio de Rede Social</h3>
@@ -48,7 +48,7 @@ export default function CookiesPage() {
 
                     <h2 className="text-2xl font-bold text-white mt-10 mb-4">Seu Controle Sobre Eles</h2>
                     <p>
-                        Qualquer visitante da internet, detém do total controle na guia de "Segurança" ou painéis de preferências dos principais browsers de navegação (Google Chrome, Brave, Safari, Firefox) de remover esses "Cookies" salvos ao limpar o cachê. Entenda no entanto, que limpezas severas requerem recadastros rotineiros ou bugs passageiros visuais em páginas do front-end.
+                        Qualquer visitante da internet, detém do total controle na guia de &quot;Segurança&quot; ou painéis de preferências dos principais browsers de navegação (Google Chrome, Brave, Safari, Firefox) de remover esses &quot;Cookies&quot; salvos ao limpar o cachê. Entenda no entanto, que limpezas severas requerem recadastros rotineiros ou bugs passageiros visuais em páginas do front-end.
                     </p>
                 </div>
             </div>

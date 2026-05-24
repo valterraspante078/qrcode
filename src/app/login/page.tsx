@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Zap, Sparkles, Mail, Lock, Loader2, Eye, EyeOff, CheckCircle2, ArrowLeft } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
+import Link from "next/link"
 
 // Inline Google logo SVG component
 function GoogleLogo({ className }: { className?: string }) {
@@ -405,12 +406,12 @@ function LoginContent() {
 
                 {/* Footer link */}
                 <div className="text-center mt-8">
-                    <a
+                    <Link
                         href="/"
                         className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                     >
                         ← Voltar para o site
-                    </a>
+                    </Link>
                 </div>
             </div>
         </main>

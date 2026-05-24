@@ -1,6 +1,6 @@
 import { isAdmin } from "@/lib/admin";
 import { redirect } from "next/navigation";
-import { Shield, LayoutDashboard, Users, QrCode, Globe, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
 }
 
-function AdminNavItem({ href, icon, label }: { href: string; icon: any; label: string }) {
+function AdminNavItem({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
     return (
         <Link
             href={href}

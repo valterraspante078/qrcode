@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react"
-import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Image as ImageIcon, Clock, Play } from "lucide-react"
+import { Download, ExternalLink, Trash2, Eye, EyeOff, Loader2, Clock, Play } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { isAfter, parseISO } from "date-fns"
@@ -16,7 +16,7 @@ interface QRRowActionsProps {
     isPro?: boolean
 }
 
-export function QRRowActions({ id, content, name, publicUrl, expiresAt, isPro }: QRRowActionsProps) {
+export function QRRowActions({ id, name, publicUrl, expiresAt }: QRRowActionsProps) {
     const [showPreview, setShowPreview] = useState(false)
     const [showDownloadMenu, setShowDownloadMenu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)

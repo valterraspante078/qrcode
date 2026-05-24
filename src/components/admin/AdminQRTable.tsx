@@ -1,21 +1,33 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { ExternalLink, Clock, Play, Loader2, Calendar, User, Globe } from "lucide-react"
+import { useEffect, useState, useCallback } from "react"
+import { ExternalLink, Clock, Play, Loader2, Calendar, Globe } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { isAfter, parseISO, addDays, format } from "date-fns"
+import { isAfter, parseISO, format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 interface AdminQRTableProps {
     type: "registered" | "public"
 }
 
+interface QrItem {
+    id: string
+    name?: string | null
+    content: string
+    expires_at?: string | null
+    scans?: { count: number }[]
+    profiles?: {
+        display_name?: string | null
+        email: string
+    } | null
+}
+
 export function AdminQRTable({ type }: AdminQRTableProps) {
-    const [qrs, setQrs] = useState<any[]>([])
+    const [qrs, setQrs] = useState<QrItem[]>([])
     const [loading, setLoading] = useState(true)
     const [actionId, setActionId] = useState<string | null>(null)
 
-    const fetchQrs = async () => {
+    const fetchQrs = useCallback(async () => {
         try {
             const res = await fetch(`/api/admin/qr?type=${type}`)
             const data = await res.json()
@@ -25,7 +37,7 @@ export function AdminQRTable({ type }: AdminQRTableProps) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [type])
 
     const handleAction = async (id: string, action: string, expiresAt?: string) => {
         setActionId(id)
@@ -47,7 +59,7 @@ export function AdminQRTable({ type }: AdminQRTableProps) {
 
     useEffect(() => {
         fetchQrs()
-    }, [type])
+    }, [fetchQrs])
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center p-20 gap-4">

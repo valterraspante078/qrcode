@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Zap, AlertCircle, ChevronRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 export default async function ExpiredPage({
     searchParams,
@@ -51,7 +50,7 @@ export default async function ExpiredPage({
 
                         <p className="text-gray-400 text-lg leading-relaxed mb-10">
                             {qrName ? (
-                                <>O QR Code <strong className="text-white">"{qrName}"</strong> pertence a uma conta <span className="text-blue-400 font-bold uppercase tracking-wider text-sm">Free</span> e atingiu o limite de tempo.</>
+                                <>O QR Code <strong className="text-white">&quot;{qrName}&quot;</strong> pertence a uma conta <span className="text-blue-400 font-bold uppercase tracking-wider text-sm">Free</span> e atingiu o limite de tempo.</>
                             ) : (
                                 <>Este QR Code pertence a uma conta <span className="text-blue-400 font-bold uppercase tracking-wider text-sm">Free</span> e atingiu o limite de tempo.</>
                             )}

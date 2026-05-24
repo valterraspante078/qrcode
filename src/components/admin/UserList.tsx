@@ -1,11 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { User, Mail, Shield, Zap, Clock, Loader2 } from "lucide-react"
+import { Zap, Clock, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+interface UserItem {
+    id: string
+    display_name?: string | null
+    email: string
+    subscription_status?: string | null
+    subscription_tier?: string | null
+    created_at: string
+}
+
 export function UserList() {
-    const [users, setUsers] = useState<any[]>([])
+    const [users, setUsers] = useState<UserItem[]>([])
     const [loading, setLoading] = useState(true)
 
     const fetchUsers = async () => {

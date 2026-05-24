@@ -6,7 +6,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const { name, expires_at } = await request.json()
     const supabase = await createClient()
 
-    const updateData: any = {}
+    const updateData: { name?: string; expires_at?: string | null } = {}
     if (name !== undefined) updateData.name = name
     if (expires_at !== undefined) updateData.expires_at = expires_at
 
