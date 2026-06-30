@@ -90,22 +90,24 @@ export default async function BlogPost({ params }: PageProps) {
     </div>
   `;
 
-  // Função para tratar botões legados que podem estar no conteúdo do banco sem link
-  const fixLegacyButtons = (html: string) => {
-    // Procura por qualquer tag de botão, link ou span que contenha termos de CTA e força o redirecionamento
-    return html.replace(
-      /(<[a-z0-9]+[^>]*>)([\s\S]*?)(Criar QR Code|Gerar QR Code|Começar agora|Gerar agora|Criar meu QR Code Grátis|Gerar QR Code Agora)([\s\S]*?)(<\/[a-z0-9]+>)/gi,
-      `<a href="/login?mode=signup" class="cta-button" data-cta="legacy-fix">$2$3$4</a>`
+  // Trata apenas botões legados simples. A versão anterior capturava blocos HTML
+  // inteiros e podia transformar seções completas do artigo em um CTA azul.
+  const fixLegacyButtons = (html: string) =>
+    html.replace(
+      /<button\b[^>]*>\s*([^<]*(?:Criar QR Code|Gerar QR Code|Começar agora|Gerar agora|Criar meu QR Code Grátis|Gerar QR Code Agora)[^<]*)\s*<\/button>/gi,
+      `<a href="/login?mode=signup" class="cta-button" data-cta="legacy-fix">$1</a>`
     );
-  };
 
   const processedContent = fixLegacyButtons(content);
+  const contentAlreadyHasCta = /class=["'][^"']*(?:cta-box|cta-final|cta-button)[^"']*["']/i.test(processedContent);
 
   // Divide o conteúdo em parágrafos para injetar o CTA no meio de forma segura
   const paragraphs = processedContent.split('</p>');
   let contentWithCtas = "";
   
-  if (paragraphs.length >= 6) {
+  if (contentAlreadyHasCta) {
+    contentWithCtas = processedContent;
+  } else if (paragraphs.length >= 6) {
     const middleIndex = Math.floor(paragraphs.length / 2);
     contentWithCtas =
       paragraphs.slice(0, middleIndex).join('</p>') + '</p>' + 
