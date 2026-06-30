@@ -80,7 +80,7 @@ export default async function BlogPage() {
           ) : (
             (posts as Post[]).map((post) => (
               <Link 
-                key={post.id} 
+                key={`${post.slug}-${post.created_at}`}
                 href={`/blog/${post.slug}`}
                 className="group flex flex-col bg-card border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all hover:translate-y--1"
               >

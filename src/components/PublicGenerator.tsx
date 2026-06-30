@@ -12,6 +12,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
     const [isCopied, setIsCopied] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [qrId, setQrId] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const qrRef = useRef<SVGSVGElement>(null)
     const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
@@ -19,6 +20,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
     const saveToDb = async () => {
         if (qrId || isSaving) return qrId
         setIsSaving(true)
+        setError(null)
         try {
             const res = await fetch("/api/qr", {
                 method: "POST",
@@ -26,6 +28,11 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                 body: JSON.stringify({ content, name: name || (hideStyles ? "QR Dashboard" : "QR Público") })
             })
             const data = await res.json()
+
+            if (!res.ok) {
+                throw new Error(data.error || "Não foi possível criar o QR Code.")
+            }
+
             if (data.id) {
                 // Tracking Google Ads conversion for QR Generation
                 if (typeof window !== "undefined" && typeof window.gtag === "function") {
@@ -46,6 +53,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
             }
         } catch (err) {
             console.error("Erro ao salvar", err)
+            setError(err instanceof Error ? err.message : "Não foi possível criar o QR Code.")
         } finally {
             setIsSaving(false)
         }
@@ -108,7 +116,7 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                         Crie seu QR Code agora
                     </h2>
                     <p className="text-muted-foreground text-sm">
-                        Insira o link ou texto abaixo para gerar seu QR code permanente.
+                        Insira o link abaixo para gerar seu QR Code dinâmico. QRs free expiram em 14 dias; no Pro ficam permanentes.
                     </p>
                 </div>
 
@@ -127,11 +135,12 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                     <div className="space-y-2">
                         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Destino do QR</label>
                         <input
-                            type="text"
+                            type="url"
                             value={content}
                             onChange={(e) => {
                                 setContent(e.target.value)
                                 setQrId(null)
+                                setError(null)
                             }}
                             className="w-full h-12 px-4 rounded-xl bg-background/50 border border-white/10 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all placeholder:text-muted-foreground/50"
                             placeholder="https://exemplo.com.br"
@@ -140,14 +149,14 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
 
                     {qrId && (
                         <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <label className="text-xs font-medium uppercase tracking-wider text-blue-400">Seu Link Permanente</label>
+                            <label className="text-xs font-medium uppercase tracking-wider text-blue-400">Seu Link Gerenciado</label>
                             <div className="flex gap-2">
                                 <input
                                     readOnly
                                     value={publicUrl}
-                                    title="Link Permanente"
-                                    placeholder="Link Permanente"
-                                    aria-label="Link Permanente gerado do QR Code"
+                                    title="Link Gerenciado"
+                                    placeholder="Link Gerenciado"
+                                    aria-label="Link gerenciado gerado do QR Code"
                                     className="flex-1 h-10 px-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-xs text-blue-300 outline-none"
                                 />
                                 <button
@@ -158,6 +167,12 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                                     {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-blue-400" />}
                                 </button>
                             </div>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center">
+                            {error}
                         </div>
                     )}
 
@@ -192,9 +207,11 @@ export function PublicGenerator({ hideStyles = false }: { hideStyles?: boolean }
                                 onClick={saveToDb}
                                 disabled={isSaving}
                                 aria-label="Salvar no Dashboard"
-                                className="px-4 h-12 rounded-xl border border-white/10 hover:bg-white/5 transition-colors flex items-center justify-center disabled:opacity-50"
+                                title="Salvar no Dashboard"
+                                className="min-w-[128px] px-4 h-12 rounded-xl border border-white/10 hover:bg-white/5 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 text-xs font-bold"
                             >
-                                {isSaving ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 text-blue-400" />}
+                                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-blue-400" />}
+                                <span>Salvar</span>
                             </button>
                         )}
                     </div>

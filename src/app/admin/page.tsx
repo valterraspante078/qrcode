@@ -13,18 +13,33 @@ interface AdminStats {
     publicQrs: number
 }
 
+const EMPTY_STATS: AdminStats = {
+    totalUsers: 0,
+    totalQrs: 0,
+    activeQrs: 0,
+    publicQrs: 0,
+}
+
 export default function AdminDashboard() {
-    const [stats, setStats] = useState<AdminStats | null>(null)
+    const [stats, setStats] = useState<AdminStats>(EMPTY_STATS)
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<"users" | "registered" | "public">("users")
 
     const fetchStats = async () => {
         try {
             const res = await fetch("/api/admin/stats")
-            const data = await res.json()
-            setStats(data)
+            if (!res.ok) throw new Error("Falha ao carregar estatísticas")
+
+            const data = await res.json() as Partial<AdminStats>
+            setStats({
+                totalUsers: data.totalUsers ?? 0,
+                totalQrs: data.totalQrs ?? 0,
+                activeQrs: data.activeQrs ?? 0,
+                publicQrs: data.publicQrs ?? 0,
+            })
         } catch (err) {
             console.error("Stats error:", err)
+            setStats(EMPTY_STATS)
         } finally {
             setLoading(false)
         }

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/validation";
 import { Zap, AlertCircle, ChevronRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ export default async function ExpiredPage({
     const { id } = await searchParams;
     let qrName = "";
 
-    if (id) {
+    if (isUuid(id)) {
         const supabase = await createClient();
         const { data } = await supabase
             .from("qr_codes")

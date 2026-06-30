@@ -18,12 +18,11 @@ export default function SettingsPage() {
 
     useEffect(() => {
         async function fetchUser() {
-            if (!supabase) {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
                 setLoading(false)
                 return
             }
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
             setUser(user)
 
             const { data: profileData } = await supabase
@@ -44,12 +43,15 @@ export default function SettingsPage() {
         setMessage({ type: "", text: "" })
 
         try {
+            const displayName = (profile.display_name || "").trim().slice(0, 100)
+            const pixKey = (profile.pix_key || "").trim().slice(0, 160)
+
             const { error } = await supabase
                 .from("profiles")
                 .upsert({
                     id: user.id,
-                    display_name: profile.display_name,
-                    pix_key: profile.pix_key,
+                    display_name: displayName,
+                    pix_key: pixKey,
                     updated_at: new Date().toISOString()
                 })
 
@@ -66,6 +68,11 @@ export default function SettingsPage() {
     const handleUpdatePassword = async () => {
         if (passwords.new !== passwords.confirm) {
             setMessage({ type: "error", text: "As senhas não coincidem." })
+            return
+        }
+
+        if (passwords.new.length < 8) {
+            setMessage({ type: "error", text: "A nova senha deve ter pelo menos 8 caracteres." })
             return
         }
 
@@ -88,6 +95,14 @@ export default function SettingsPage() {
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
                 <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
                 <p className="text-muted-foreground animate-pulse font-bold uppercase tracking-widest text-xs">Acessando Configurações...</p>
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+            <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-red-500/20 bg-red-500/10 text-red-300 text-sm font-bold">
+                Sessão não encontrada. Faça login novamente para acessar suas configurações.
             </div>
         )
     }

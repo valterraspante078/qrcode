@@ -1,30 +1,24 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getAppOrigin } from '@/lib/server/security'
+import { isSafeRedirectPath } from '@/lib/validation'
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url)
+    const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
-    // if "next" is in param, use it as the redirect URL
     const nextParam = searchParams.get('next') ?? '/dashboard'
-    const next = nextParam.startsWith('/') ? nextParam : '/dashboard'
+    const next = isSafeRedirectPath(nextParam) ? nextParam : '/dashboard'
+    const appOrigin = getAppOrigin(request)
 
     if (code) {
         const supabase = await createClient()
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
-            const forwardedHost = request.headers.get('x-forwarded-host') // Hello, Vercel
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that origin is localhost/127.0.0.1 in dev
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
-            }
+            return NextResponse.redirect(new URL(next, appOrigin))
         }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/login?error=Não foi possível autenticar. Tente novamente.`)
+    const loginUrl = new URL('/login', appOrigin)
+    loginUrl.searchParams.set('error', 'Não foi possível autenticar. Tente novamente.')
+    return NextResponse.redirect(loginUrl)
 }

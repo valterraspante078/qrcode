@@ -4,22 +4,29 @@ import { BarChart3, QrCode, ArrowUp, Zap } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { isAfter, parseISO } from "date-fns"
+import { getAppOrigin } from "@/lib/server/security"
 
 import { QRNameEditor } from "@/components/dashboard/QRNameEditor"
 import { QRRowActions } from "@/components/dashboard/QRRowActions"
 import { PaymentTracker } from "@/components/PaymentTracker"
 
-export default async function DashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-    const isSuccess = searchParams?.success === "true"
-    const supabase = await createClient()
+interface DashboardQr {
+    id: string
+    name: string
+    content: string
+    expires_at?: string | null
+    is_active?: boolean | null
+    scans?: { count: number }[]
+}
 
-    if (!supabase) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Aguardando configuração do Supabase...</p>
-            </div>
-        )
-    }
+function isQrActive(qr: Pick<DashboardQr, "expires_at" | "is_active">) {
+    return qr.is_active !== false && (!qr.expires_at || isAfter(parseISO(qr.expires_at), new Date()))
+}
+
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const resolvedSearchParams = await searchParams
+    const isSuccess = resolvedSearchParams?.success === "true"
+    const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -47,10 +54,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
 
-    const totalScans = qrs?.reduce((acc: number, qr: { scans?: { count: number }[] }) => acc + (qr.scans?.[0]?.count || 0), 0) || 0
-    const activeQrs = qrs?.filter((qr: { expires_at?: string }) => {
-        return !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
-    }).length || 0
+    const dashboardQrs = (qrs ?? []) as DashboardQr[]
+    const siteUrl = getAppOrigin()
+    const totalScans = dashboardQrs.reduce((acc, qr) => acc + (qr.scans?.[0]?.count || 0), 0)
+    const activeQrs = dashboardQrs.filter(isQrActive).length
 
     return (
         <div className="space-y-10">
@@ -97,7 +104,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
             <div className="space-y-4">
                 <h3 className="text-xl font-bold px-2 flex items-center gap-2">
                     Seus Códigos Recentes
-                    <span className="text-xs font-normal text-muted-foreground bg-white/5 px-2 py-1 rounded-full">{qrs?.length || 0} criados</span>
+                    <span className="text-xs font-normal text-muted-foreground bg-white/5 px-2 py-1 rounded-full">{dashboardQrs.length} criados</span>
                 </h3>
                 <div className="glass rounded-[2rem] border-white/5 relative">
                     <table className="w-full text-left">
@@ -110,8 +117,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {qrs && qrs.length > 0 ? qrs.map((qr: { id: string; name: string; content: string; expires_at?: string; scans?: { count: number }[] }) => {
-                                const active = !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
+                            {dashboardQrs.length > 0 ? dashboardQrs.map((qr) => {
+                                const active = isQrActive(qr)
                                 const scans = qr.scans?.[0]?.count || 0
                                 return (
                                     <tr key={qr.id} className="hover:bg-white/5 transition-colors group">
@@ -136,8 +143,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                                                 id={qr.id}
                                                 content={qr.content}
                                                 name={qr.name}
-                                                publicUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/q/${qr.id}`}
+                                                publicUrl={`${siteUrl}/q/${qr.id}`}
                                                 expiresAt={qr.expires_at}
+                                                isActive={active}
                                                 isPro={isPro}
                                             />
                                         </td>

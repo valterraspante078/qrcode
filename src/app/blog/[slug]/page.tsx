@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Metadata } from "next";
 import BlogTracking from "@/components/blog/BlogTracking";
+import DOMPurify from "isomorphic-dompurify";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -94,18 +95,26 @@ export default async function BlogPost({ params }: PageProps) {
 
   // Divide o conteúdo em parágrafos para injetar o CTA no meio de forma segura
   const paragraphs = processedContent.split('</p>');
-  let sanitizedContent = "";
+  let contentWithCtas = "";
   
   if (paragraphs.length >= 6) {
     const middleIndex = Math.floor(paragraphs.length / 2);
-    sanitizedContent = 
+    contentWithCtas =
       paragraphs.slice(0, middleIndex).join('</p>') + '</p>' + 
       middleCTA + 
       paragraphs.slice(middleIndex).join('</p>') + 
       finalCTA;
   } else {
-    sanitizedContent = processedContent + finalCTA;
+    contentWithCtas = processedContent + finalCTA;
   }
+
+  const sanitizedContent = DOMPurify.sanitize(contentWithCtas, {
+    ALLOWED_TAGS: ["article", "div", "p", "h2", "h3", "h4", "ul", "ol", "li", "strong", "em", "a", "br", "span"],
+    ALLOWED_ATTR: ["href", "class", "target", "rel", "data-cta"],
+    ADD_ATTR: ["data-cta"],
+    FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form", "input", "button"],
+    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|\/(?!\/)|#)/i,
+  });
 
   // Schema.org JSON-LD
   const jsonLd = {

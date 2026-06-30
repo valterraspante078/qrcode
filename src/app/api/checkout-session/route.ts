@@ -1,12 +1,14 @@
 import { mpClient } from "@/lib/mercadopago";
 import { PreApproval } from "mercadopago";
 import { createClient } from "@/lib/supabase/server";
+import { getConfiguredSiteOrigin, isTrustedOriginRequest, readJsonObject } from "@/lib/server/security";
+import { parseHttpUrl } from "@/lib/validation";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 // Configuração dos planos oficiais
-const PLANS: Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }> = {
+const PLANS = {
     mensal: {
         reason: "QR Code da Fortuna — Plano Mensal",
         frequency: 1,
@@ -25,10 +27,42 @@ const PLANS: Record<string, { reason: string; frequency: number; frequencyType: 
         frequencyType: "months",
         amount: 150,
     },
-};
+} satisfies Record<string, { reason: string; frequency: number; frequencyType: "months"; amount: number }>;
+
+type PlanType = keyof typeof PLANS;
+
+function isPlanType(value: unknown): value is PlanType {
+    return typeof value === "string" && value in PLANS;
+}
+
+function getMercadoPagoErrorMessage(err: unknown) {
+    if (err instanceof Error && err.message) return err.message;
+
+    if (typeof err === "object" && err !== null) {
+        const errorObj = err as {
+            message?: unknown;
+            response?: { data?: { message?: unknown } };
+            cause?: Array<{ description?: unknown }>;
+        };
+
+        if (typeof errorObj.message === "string") return errorObj.message;
+        if (typeof errorObj.response?.data?.message === "string") return errorObj.response.data.message;
+        if (typeof errorObj.cause?.[0]?.description === "string") return errorObj.cause[0].description;
+    }
+
+    return "Erro ao processar assinatura";
+}
 
 export async function POST(req: Request) {
-    const { planType } = await req.json();
+    if (!isTrustedOriginRequest(req)) {
+        return NextResponse.json({ error: "Origem da requisição não permitida" }, { status: 403 });
+    }
+
+    const body = await readJsonObject(req);
+    if (!body || !isPlanType(body.planType)) {
+        return NextResponse.json({ error: "Tipo de plano inválido" }, { status: 400 });
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -40,13 +74,10 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Mercado Pago não configurado" }, { status: 500 });
     }
 
-    const plan = PLANS[planType];
-    if (!plan) {
-        return NextResponse.json({ error: "Tipo de plano inválido" }, { status: 400 });
-    }
+    const plan = PLANS[body.planType];
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    if (!siteUrl || !siteUrl.startsWith("http")) {
+    const siteUrl = getConfiguredSiteOrigin() ?? (process.env.NODE_ENV === "development" ? new URL(req.url).origin : null);
+    if (!siteUrl) {
         return NextResponse.json({ error: "NEXT_PUBLIC_SITE_URL inválida ou ausente." }, { status: 500 });
     }
 
@@ -63,21 +94,20 @@ export async function POST(req: Request) {
                 },
                 back_url: `${siteUrl}/dashboard?success=true`,
                 external_reference: user.id,
+                payer_email: user.email,
             },
         });
 
-        return NextResponse.json({ url: result.init_point });
+        const checkoutUrl = parseHttpUrl(result.init_point);
+        if (!checkoutUrl) {
+            console.error("Mercado Pago returned invalid init_point:", result.init_point);
+            return NextResponse.json({ error: "Mercado Pago não retornou uma URL de checkout válida" }, { status: 502 });
+        }
+
+        return NextResponse.json({ url: checkoutUrl });
 
     } catch (err) {
         console.error("Erro MP:", err);
-        const errorObj = err as unknown;
-        const errorMessage =
-            errorObj?.message ||
-            errorObj?.response?.data?.message ||
-            errorObj?.cause?.[0]?.description ||
-            (typeof errorObj === 'string' ? errorObj : JSON.stringify(errorObj)) ||
-            "Erro ao processar assinatura";
-            
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        return NextResponse.json({ error: getMercadoPagoErrorMessage(err) }, { status: 500 });
     }
 }

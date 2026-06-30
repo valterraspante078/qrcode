@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdmin } from "@/lib/admin";
+import { isTrustedOriginRequest, readJsonObject } from "@/lib/server/security";
+import { getQrExpirationDate, isUuid } from "@/lib/validation";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -46,35 +48,43 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id, action, expiresAt } = await req.json();
+    if (!isTrustedOriginRequest(req)) {
+        return NextResponse.json({ error: "Origem da requisição não permitida" }, { status: 403 });
+    }
+
+    const body = await readJsonObject(req);
+    if (!body || !isUuid(body.id)) {
+        return NextResponse.json({ error: "QR Code inválido" }, { status: 400 });
+    }
+
+    const action = typeof body.action === "string" ? body.action : "";
+    const expiresAt = typeof body.expiresAt === "string" ? body.expiresAt : "";
     const supabase = createAdminClient();
 
     try {
-        const updateData: { expires_at?: string | null } = {};
+        const updateData: { expires_at?: string | null; is_active?: boolean } = {};
 
         if (action === "extend") {
-            // Extend 14 days from now or from current expiration?
-            // Usually from now is safer for "manual extension"
-            const newExpiry = new Date();
-            newExpiry.setDate(newExpiry.getDate() + 14);
-            updateData.expires_at = newExpiry.toISOString();
+            updateData.expires_at = getQrExpirationDate();
+            updateData.is_active = true;
         } else if (action === "toggle") {
-            // If we have expiresAt, we can toggle it
-            // Logic: if expiresAt is in the past or exists, we set it to null (infinite) or...
-            // Actually the user wants to "desativar, ativar ou estender".
-            // "Ativar" = set expires_at to null (or far future). 
-            // "Desativar" = set expires_at to now.
             if (expiresAt === "deactivate") {
                 updateData.expires_at = new Date().toISOString();
+                updateData.is_active = false;
             } else if (expiresAt === "activate") {
                 updateData.expires_at = null;
+                updateData.is_active = true;
             }
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ error: "Ação inválida" }, { status: 400 });
         }
 
         const { error } = await supabase
             .from("qr_codes")
             .update(updateData)
-            .eq("id", id);
+            .eq("id", body.id);
 
         if (error) throw error;
 

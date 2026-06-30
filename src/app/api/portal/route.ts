@@ -1,11 +1,17 @@
 import { mpClient } from "@/lib/mercadopago";
 import { PreApproval } from "mercadopago";
 import { createClient } from "@/lib/supabase/server";
+import { isTrustedOriginRequest } from "@/lib/server/security";
+import { getQrExpirationDate } from "@/lib/validation";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(req: Request) {
+    if (!isTrustedOriginRequest(req)) {
+        return NextResponse.json({ error: "Origem da requisição não permitida" }, { status: 403 });
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -48,7 +54,7 @@ export async function POST() {
         }
 
         // Atualizar perfil localmente (downgrade para FREE)
-        await supabase
+        const { error: profileError } = await supabase
             .from("profiles")
             .update({
                 subscription_status: "inactive",
@@ -56,6 +62,15 @@ export async function POST() {
                 mp_subscription_id: null,
             })
             .eq("id", user.id);
+
+        if (profileError) throw profileError;
+
+        const { error: qrError } = await supabase
+            .from("qr_codes")
+            .update({ expires_at: getQrExpirationDate() })
+            .eq("user_id", user.id);
+
+        if (qrError) throw qrError;
 
         return NextResponse.json({ success: true, message: "Assinatura cancelada com sucesso" });
     } catch (err: unknown) {

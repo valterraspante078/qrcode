@@ -13,10 +13,11 @@ interface QRRowActionsProps {
     name: string
     publicUrl: string
     expiresAt?: string | null
+    isActive?: boolean
     isPro?: boolean
 }
 
-export function QRRowActions({ id, name, publicUrl, expiresAt }: QRRowActionsProps) {
+export function QRRowActions({ id, name, publicUrl, expiresAt, isActive: activeOverride, isPro = false }: QRRowActionsProps) {
     const [showPreview, setShowPreview] = useState(false)
     const [showDownloadMenu, setShowDownloadMenu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -25,7 +26,7 @@ export function QRRowActions({ id, name, publicUrl, expiresAt }: QRRowActionsPro
     const qrCanvasRef = useRef<HTMLCanvasElement>(null)
     const router = useRouter()
 
-    const isActive = !expiresAt || isAfter(parseISO(expiresAt), new Date())
+    const isActive = activeOverride ?? (!expiresAt || isAfter(parseISO(expiresAt), new Date()))
 
     const downloadSVG = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -78,6 +79,13 @@ export function QRRowActions({ id, name, publicUrl, expiresAt }: QRRowActionsPro
 
     const handleToggleExpiration = async (e: React.MouseEvent) => {
         e.stopPropagation()
+        if (!isActive && !isPro) {
+            if (confirm("Reativação permanente exige o plano Pro. Deseja ver os planos?")) {
+                router.push("/dashboard/billing")
+            }
+            return
+        }
+
         const action = isActive ? "expirar" : "reativar"
         if (!confirm(`Tem certeza que deseja ${action} este QR Code?`)) return
 
@@ -214,7 +222,7 @@ export function QRRowActions({ id, name, publicUrl, expiresAt }: QRRowActionsPro
                 {/* EXPIRAR / REATIVAR */}
                 <div className="flex flex-col items-center gap-1 group/item">
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/0 group-hover/item:text-muted-foreground/60 transition-all">
-                        {isActive ? "Expirar" : "Ativar"}
+                        {isActive ? "Expirar" : isPro ? "Ativar" : "Upgrade"}
                     </span>
                     <button
                         onClick={handleToggleExpiration}

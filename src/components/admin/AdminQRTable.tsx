@@ -15,6 +15,7 @@ interface QrItem {
     name?: string | null
     content: string
     expires_at?: string | null
+    is_active?: boolean | null
     scans?: { count: number }[]
     profiles?: {
         display_name?: string | null
@@ -82,7 +83,7 @@ export function AdminQRTable({ type }: AdminQRTableProps) {
                 </thead>
                 <tbody className="divide-y divide-white/5">
                     {qrs.map((qr) => {
-                        const active = !qr.expires_at || isAfter(parseISO(qr.expires_at), new Date())
+                        const active = qr.is_active !== false && (!qr.expires_at || isAfter(parseISO(qr.expires_at), new Date()))
                         const scans = qr.scans?.[0]?.count || 0
                         const isProcessing = actionId === qr.id
 
@@ -156,7 +157,7 @@ export function AdminQRTable({ type }: AdminQRTableProps) {
                                         </button>
                                         
                                         <a
-                                            href={`${process.env.NEXT_PUBLIC_SITE_URL}/q/${qr.id}`}
+                                            href={`/q/${qr.id}`}
                                             target="_blank"
                                             className="p-2 bg-white/5 border border-white/5 text-muted-foreground hover:bg-white/10 hover:text-white rounded-lg transition-all"
                                         >

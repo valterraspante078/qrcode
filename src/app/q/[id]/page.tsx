@@ -1,50 +1,70 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createHash } from "crypto";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isUuid, parseHttpUrl } from "@/lib/validation";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { isAfter, parseISO } from "date-fns";
 
+function truncate(value: string, maxLength: number) {
+    return value.length > maxLength ? value.slice(0, maxLength) : value;
+}
+
+function hashIpAddress(value: string) {
+    if (!value || value === "unknown") return "unknown";
+
+    const salt = process.env.IP_HASH_SALT ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+    return createHash("sha256").update(`${salt}:${value}`).digest("hex");
+}
+
 export default async function QRRedirectPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    
-    // Use Service Role to bypass RLS for public redirect engine
-    const supabaseAdmin = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    if (!isUuid(id)) {
+        return redirect("/?error=not-found");
+    }
+
+    const supabaseAdmin = createAdminClient();
 
     const { data: qr, error } = await supabaseAdmin
         .from("qr_codes")
-        .select("*")
+        .select("id, content, expires_at, is_active")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
     if (error || !qr) {
         return redirect("/?error=not-found");
     }
 
-    // Silent Expiration Logic:
-    // 1. If user is PRO (active subscription), never expires.
-    // 2. If free/public, check if expires_at has passed.
+    if (qr.is_active === false) {
+        return redirect(`/expired?id=${id}`);
+    }
 
     const hasExpired = qr.expires_at && isAfter(new Date(), parseISO(qr.expires_at));
 
     if (hasExpired) {
-        // Redirect to a dedicated expiration page with upgrade CTA
         return redirect(`/expired?id=${id}`);
     }
 
-    // Record scan (Analytics)
-    const headersList = await headers();
-    const userAgent = headersList.get("user-agent") || "unknown";
-    const referer = headersList.get("referer") || "direct";
-    const ip = headersList.get("x-forwarded-for")?.split(',')[0] || "unknown";
+    const destination = parseHttpUrl(qr.content);
+    if (!destination) {
+        console.error("QR redirect blocked invalid destination:", { id });
+        return redirect("/?error=invalid-destination");
+    }
 
-    await supabaseAdmin.from("scans").insert({
+    const headersList = await headers();
+    const userAgent = truncate(headersList.get("user-agent") || "unknown", 500);
+    const referer = truncate(headersList.get("referer") || "direct", 2048);
+    const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+
+    const { error: scanError } = await supabaseAdmin.from("scans").insert({
         qr_id: id,
         user_agent: userAgent,
         referer: referer,
-        ip_address: ip,
+        ip_address: hashIpAddress(ip),
     });
 
-    return redirect(qr.content);
+    if (scanError) {
+        console.error("QR scan insert error:", scanError);
+    }
+
+    return redirect(destination);
 }

@@ -7,6 +7,7 @@ import { Zap, Sparkles, Mail, Lock, Loader2, Eye, EyeOff, CheckCircle2, ArrowLef
 import { useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
 import Link from "next/link"
+import { isUuid } from "@/lib/validation"
 
 // Inline Google logo SVG component
 function GoogleLogo({ className }: { className?: string }) {
@@ -152,7 +153,8 @@ function LoginContent() {
             if (isSignUp) {
                 const refMatch = document.cookie.match(/(?:^|; )qrc_affiliate_ref=([^;]*)/);
                 if (refMatch && refMatch[1]) {
-                    affiliateId = refMatch[1];
+                    const decodedRef = decodeURIComponent(refMatch[1]);
+                    affiliateId = isUuid(decodedRef) ? decodedRef : null;
                 }
             }
 
