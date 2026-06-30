@@ -112,14 +112,14 @@ A Vercel chama apenas rotas HTTP e nao consegue controlar o navegador local nem 
 
 Arquivos relacionados:
 
-- `vercel.json`: agenda `/api/cron/medium-drafts` nos horarios equivalentes a 12:00, 18:00 e 22:00 em `America/Sao_Paulo`.
+- `vercel.json`: agenda `/api/cron/medium-drafts` diariamente as 12:00 em `America/Sao_Paulo`, respeitando o limite do plano Hobby da Vercel.
 - `src/app/api/cron/medium-drafts/route.ts`: valida `Authorization: Bearer CRON_SECRET` e retorna o resumo do payload do rascunho.
 - `src/lib/medium-drafts.ts`: seleciona o post do slot, monta o conteudo com imagem, tags, link canonico e status `draft`.
 
 Observacoes:
 
 - Configure `CRON_SECRET` na Vercel antes de depender do cron.
-- Em contas Vercel com limite de cron diario, tres execucoes por dia podem exigir plano superior.
+- Em contas Vercel Hobby, tres execucoes por dia sao bloqueadas. Para 12:00, 18:00 e 22:00 sem upgrade, use a automacao local do Codex. Em plano Vercel Pro, a agenda pode ser alterada para `0 1,15,21 * * *`.
 - A rota cron nao chama a API do Medium e nao publica conteudo. Ela existe para preparar e auditar o slot agendado sem risco.
 
 ## Fluxo opcional com token legado
